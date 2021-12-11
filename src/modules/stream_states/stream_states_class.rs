@@ -1,5 +1,8 @@
+use std::{sync::mpsc::Receiver, thread};
+
 use super::enums::{self};
 
+#[derive(Debug, PartialEq, Clone)]
 pub enum StateUpdate {
     StreamRunning(bool),
     StreamIsMuted(bool),
@@ -56,16 +59,16 @@ impl StreamStates {
         StreamStates{..Default::default()}
     }
 
-    pub fn update(mut self, updateMessage: StateUpdate) -> Self {
-        match updateMessage {
-            StateUpdate::StreamRunning(new_val) => {self.stream_running = new_val; self},
-            StateUpdate::StreamIsMuted(new_val) => {self.stream_is_muted = new_val; self},
+    pub fn update(mut self, update: StateUpdate) -> Self {
+        match update {
+            StateUpdate::StreamRunning(new_val)     => {self.stream_running  = new_val; self},
+            StateUpdate::StreamIsMuted(new_val)     => {self.stream_is_muted = new_val; self},
             StateUpdate::ComputerSoundIsOn(new_val) => {self.computer_sound_is_on = new_val; self},
             StateUpdate::ChangeSceneOnChangeSlideHotkey(new_val) => {self.change_scene_on_change_slide_hotkey = new_val; self},
-            StateUpdate::TimerCanRun(new_val) => {self.timer_can_run = new_val; self},
-            StateUpdate::TimerLength(new_val) => {self.timer_length = new_val; self},
-            StateUpdate::TimerText(new_val) => {self.timer_text = new_val; self},
-            StateUpdate::Scene(new_val) => {self.change_scene(&new_val)},
+            StateUpdate::TimerCanRun(new_val)  => {self.timer_can_run = new_val; self},
+            StateUpdate::TimerLength(new_val)   => {self.timer_length  = new_val; self},
+            StateUpdate::TimerText(new_val)  => {self.timer_text    = new_val;  self},
+            StateUpdate::Scene(new_val)      => {self.change_scene(&new_val)},
             StateUpdate::SceneIsAugmented(new_val) => {
                 self.scene_is_augmented = new_val;
                 self.change_scene(&enums::Scenes::Augmented)},
