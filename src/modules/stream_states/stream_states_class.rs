@@ -1,6 +1,18 @@
 use super::enums::{self};
 
+pub enum StateUpdate {
+    StreamRunning(bool),
+    StreamIsMuted(bool),
+    ComputerSoundIsOn(bool),
+    ChangeSceneOnChangeSlideHotkey(bool),
+    SceneIsAugmented(bool),
+    TimerCanRun(bool),
+    TimerLength(f32),
+    TimerText(String),
+    Scene(enums::Scenes),
+}
 
+#[derive(Debug)]
 pub struct StreamStates {
     pub stream_running: bool,
     pub stream_is_muted: bool,
@@ -44,6 +56,22 @@ impl StreamStates {
         StreamStates{..Default::default()}
     }
 
+    pub fn update(mut self, updateMessage: StateUpdate) -> Self {
+        match updateMessage {
+            StateUpdate::StreamRunning(new_val) => {self.stream_running = new_val; self},
+            StateUpdate::StreamIsMuted(new_val) => {self.stream_is_muted = new_val; self},
+            StateUpdate::ComputerSoundIsOn(new_val) => {self.computer_sound_is_on = new_val; self},
+            StateUpdate::ChangeSceneOnChangeSlideHotkey(new_val) => {self.change_scene_on_change_slide_hotkey = new_val; self},
+            StateUpdate::TimerCanRun(new_val) => {self.timer_can_run = new_val; self},
+            StateUpdate::TimerLength(new_val) => {self.timer_length = new_val; self},
+            StateUpdate::TimerText(new_val) => {self.timer_text = new_val; self},
+            StateUpdate::Scene(new_val) => {self.change_scene(&new_val)},
+            StateUpdate::SceneIsAugmented(new_val) => {
+                self.scene_is_augmented = new_val;
+                self.change_scene(&enums::Scenes::Augmented)},
+        }
+    }
+
     pub fn get_current_scene(&self) -> enums::Scenes {
         self.current_scene
     }
@@ -56,7 +84,7 @@ impl StreamStates {
         self.screen_sub_scene
     }
 
-    pub fn change_scene(self, scene: &enums::Scenes) -> Self {
+    pub fn change_scene(mut self, scene: &enums::Scenes) -> Self {
         match scene {
             enums::Scenes::CameraDefault | enums::Scenes::CameraWithUpperRight | 
             enums::Scenes::CameraWithLargeUpperRight | enums::Scenes::CameraWithLowerRight 
@@ -64,7 +92,7 @@ impl StreamStates {
             enums::Scenes::ScreenDefault | enums::Scenes::ScreenWithUpperRight |
             enums::Scenes::ScreenWithLowerRight 
             => {StreamStates::set_screen_scene(self, scene)},
-            
+            enums::Scenes::Augmented => {self.current_scene = *scene; self}   
         }
     }
 
