@@ -13,9 +13,9 @@ pub struct StreamStates {
     pub timer_length: f32,
     pub timer_text: String,
 
-    pub current_scene: enums::Scenes,
-    pub camera_sub_scene: enums::Scenes,
-    pub screen_sub_scene: enums::Scenes,
+    current_scene: enums::Scenes,
+    camera_sub_scene: enums::Scenes,
+    screen_sub_scene: enums::Scenes,
 }
 
 impl Default for StreamStates {
@@ -42,6 +42,18 @@ impl Default for StreamStates {
 impl StreamStates {
     pub fn new() -> Self {
         StreamStates{..Default::default()}
+    }
+
+    pub fn get_current_scene(&self) -> enums::Scenes {
+        self.current_scene
+    }
+
+    pub fn get_current_camera_sub_scene(&self) -> enums::Scenes {
+        self.camera_sub_scene
+    }
+
+    pub fn get_current_screen_sub_scene(&self) -> enums::Scenes {
+        self.screen_sub_scene
     }
 
     pub fn change_scene(self, scene: &enums::Scenes) -> Self {
