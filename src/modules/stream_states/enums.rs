@@ -9,4 +9,6 @@ pub enum Scenes {
     ScreenDefault,
     ScreenWithUpperRight,
     ScreenWithLowerRight,
+
+    Augmented
 }
