@@ -44,16 +44,16 @@ impl StreamStates {
         StreamStates{..Default::default()}
     }
 
-    pub fn update(mut self, update: StateUpdate) -> Self {
+    pub fn update(&mut self, update: StateUpdate) {
         match update {
-            StateUpdate::StreamRunning(new_val)     => {self.stream_running  = new_val; self},
-            StateUpdate::StreamIsMuted(new_val)     => {self.stream_is_muted = new_val; self},
-            StateUpdate::ComputerSoundIsOn(new_val) => {self.computer_sound_is_on = new_val; self},
-            StateUpdate::ChangeSceneOnChangeSlideHotkey(new_val) => {self.change_scene_on_change_slide_hotkey = new_val; self},
-            StateUpdate::TimerCanRun(new_val)  => {self.timer_can_run = new_val; self},
-            StateUpdate::TimerLength(new_val)   => {self.timer_length  = new_val; self},
-            StateUpdate::TimerText(new_val)  => {self.timer_text    = new_val;  self},
-            StateUpdate::Scene(new_val)      => {self.change_scene(&new_val)},
+            StateUpdate::StreamRunning(new_val)     => {self.stream_running  = new_val;},
+            StateUpdate::StreamIsMuted(new_val)     => {self.stream_is_muted = new_val;},
+            StateUpdate::ComputerSoundIsOn(new_val) => {self.computer_sound_is_on = new_val;},
+            StateUpdate::ChangeSceneOnChangeSlideHotkey(new_val) => {self.change_scene_on_change_slide_hotkey = new_val;},
+            StateUpdate::TimerCanRun(new_val)  => {self.timer_can_run = new_val;},
+            StateUpdate::TimerLength(new_val)   => {self.timer_length  = new_val;},
+            StateUpdate::TimerText(new_val)  =>  {self.timer_text    = new_val;},
+            StateUpdate::Scene(new_val)      =>  {self.change_scene(&new_val)},
             StateUpdate::SceneIsAugmented(new_val) => {
                 self.scene_is_augmented = new_val;
                 self.change_scene(&enums::Scenes::Augmented)},
@@ -72,7 +72,7 @@ impl StreamStates {
         self.screen_sub_scene
     }
 
-    pub fn change_scene(mut self, scene: &enums::Scenes) -> Self {
+    pub fn change_scene(&mut self, scene: &enums::Scenes) {
         match scene {
             enums::Scenes::CameraDefault | enums::Scenes::CameraWithUpperRight | 
             enums::Scenes::CameraWithLargeUpperRight | enums::Scenes::CameraWithLowerRight 
@@ -80,19 +80,17 @@ impl StreamStates {
             enums::Scenes::ScreenDefault | enums::Scenes::ScreenWithUpperRight |
             enums::Scenes::ScreenWithLowerRight 
             => {StreamStates::set_screen_scene(self, scene)},
-            enums::Scenes::Augmented => {self.current_scene = *scene; self}   
+            enums::Scenes::Augmented => {self.current_scene = *scene;}   
         }
     }
 
-    fn set_camera_scene(mut self, scene: &enums::Scenes) -> Self{
+    fn set_camera_scene(&mut self, scene: &enums::Scenes) {
         self.camera_sub_scene = scene.clone();
         self.current_scene = scene.clone();
-        self
     }
 
-    fn set_screen_scene(mut self, scene: &enums::Scenes) -> Self {
+    fn set_screen_scene(&mut self, scene: &enums::Scenes) {
         self.screen_sub_scene = scene.clone();
         self.current_scene = scene.clone();
-        self
     }
 }
