@@ -125,13 +125,25 @@ fn test_updating() {
     assert_eq!(stream_state.scene_is_augmented, true);
 }
 
-/* 
+
 #[test]
 fn can_run_in_thread() {
     let (tx, rx) = mpsc::channel();
 
-    thread::spawn(move || {
-        tx
+    let rx_thread = thread::spawn(move || {
+        let mut stream_state = s_s::stream_states_class::StreamStates::new();
+        for received in rx {
+            assert_eq!(received, s_s::stream_states_class::StateUpdate::StreamRunning(true));
+            stream_state = stream_state.update(received);
+            assert_eq!(stream_state.stream_running, true);
+            break;
+        }
     });
+
+    tx.send(s_s::stream_states_class::StateUpdate::StreamRunning(true)).unwrap();
+    let result = rx_thread.join();
+    match result {
+        Ok(_) => return,
+        Err(_) => panic!(),
+    }
 }
-*/
