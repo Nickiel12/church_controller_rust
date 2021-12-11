@@ -1,5 +1,5 @@
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone, Copy)]
 pub enum Scenes {
     CameraDefault,
     CameraWithUpperRight,

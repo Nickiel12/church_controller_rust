@@ -43,4 +43,28 @@ impl StreamStates {
     pub fn new() -> Self {
         StreamStates{..Default::default()}
     }
+
+    pub fn change_scene(self, scene: &enums::Scenes) -> Self {
+        match scene {
+            enums::Scenes::CameraDefault | enums::Scenes::CameraWithUpperRight | 
+            enums::Scenes::CameraWithLargeUpperRight | enums::Scenes::CameraWithLowerRight 
+            => {StreamStates::set_camera_scene(self, scene)},
+            enums::Scenes::ScreenDefault | enums::Scenes::ScreenWithUpperRight |
+            enums::Scenes::ScreenWithLowerRight 
+            => {StreamStates::set_screen_scene(self, scene)},
+            
+        }
+    }
+
+    fn set_camera_scene(mut self, scene: &enums::Scenes) -> Self{
+        self.camera_sub_scene = scene.clone();
+        self.current_scene = scene.clone();
+        self
+    }
+
+    fn set_screen_scene(mut self, scene: &enums::Scenes) -> Self {
+        self.screen_sub_scene = scene.clone();
+        self.current_scene = scene.clone();
+        self
+    }
 }
