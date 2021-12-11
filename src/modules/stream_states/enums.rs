@@ -1,12 +1,11 @@
 
-pub enum CameraScenes {
+#[derive(PartialEq, Debug)]
+pub enum Scenes {
     CameraDefault,
     CameraWithUpperRight,
     CameraWithLargeUpperRight,
     CameraWithLowerRight,
-}
 
-pub enum ScreenScenes {
     ScreenDefault,
     ScreenWithUpperRight,
     ScreenWithLowerRight,
