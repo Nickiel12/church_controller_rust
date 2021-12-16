@@ -3,15 +3,15 @@ use std::{sync::mpsc::{Sender, self, Receiver}, thread::{JoinHandle, self}};
 use super::{message_handler::{MessageHandler, StateMessage}, stream_states::{enums::StateUpdate, stream_states_class::StreamState}};
 
 
-pub struct IOHandler {
+pub struct StatesIOHandler {
     pub listener_join_handler: Option<JoinHandle<()>>,
     pub message_thread_tx: Option<Sender<StateMessage>>,
     data_rx: Option<Receiver<StreamState>>,
 }
 
-impl IOHandler {
+impl StatesIOHandler {
     pub fn new() -> Self {
-        IOHandler{
+        StatesIOHandler{
             ..Default::default()
         }
     }
@@ -71,9 +71,9 @@ impl IOHandler {
     }
 }
 
-impl Default for IOHandler {
+impl Default for StatesIOHandler {
     fn default() -> Self {
-        IOHandler {
+        StatesIOHandler {
             message_thread_tx: None,
             listener_join_handler: None,
             data_rx: None,

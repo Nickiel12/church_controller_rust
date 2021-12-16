@@ -1,12 +1,12 @@
 use std::thread;
 
-use crate::modules::{io_handler::{IOHandler}, message_handler::{MessageHandler, StateMessage}, stream_states::{stream_states_class::StreamState, enums::StateUpdate}};
+use crate::modules::{states_io_handler::{StatesIOHandler}, message_handler::{MessageHandler, StateMessage}, stream_states::{stream_states_class::StreamState, enums::StateUpdate}};
 
 
 #[test]
 fn test_make_socket() {
     let state = StreamState::new();
-    let mut io_handler = IOHandler::new();
+    let mut io_handler = StatesIOHandler::new();
 
     io_handler.start_socket_listener(state, "no-one cares");
 
@@ -23,7 +23,7 @@ fn test_make_socket() {
 #[test]
 fn send_on_multiple_threads() {
     let state = StreamState::new();
-    let mut io_handler = IOHandler::new();
+    let mut io_handler = StatesIOHandler::new();
 
     io_handler.start_socket_listener(state, "no-one cares");
 
@@ -54,7 +54,7 @@ fn send_on_multiple_threads() {
 #[test]
 #[should_panic]
 fn io_handler_not_started_1() {
-    let io_handler = IOHandler::new();
+    let io_handler = StatesIOHandler::new();
 
     let state = io_handler.get_states();
 }
@@ -62,7 +62,7 @@ fn io_handler_not_started_1() {
 #[test]
 #[should_panic]
 fn io_handler_not_started_2() {
-    let io_handler = IOHandler::new();
+    let io_handler = StatesIOHandler::new();
 
     let state = io_handler.close();
 }
