@@ -50,3 +50,19 @@ fn send_on_multiple_threads() {
     assert_eq!(final_state.change_scene_on_change_slide_hotkey, false);
     assert_eq!(final_state.stream_is_muted, true);
 }
+
+#[test]
+#[should_panic]
+fn io_handler_not_started_1() {
+    let io_handler = IOHandler::new();
+
+    let state = io_handler.get_states();
+}
+
+#[test]
+#[should_panic]
+fn io_handler_not_started_2() {
+    let io_handler = IOHandler::new();
+
+    let state = io_handler.close();
+}
