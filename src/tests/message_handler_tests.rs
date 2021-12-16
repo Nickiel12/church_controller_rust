@@ -53,7 +53,7 @@ fn message_handler_can_handle_multiple_messages() {
             assert_eq!(handler.computer_sound_is_on, false);
             assert_eq!(handler.scene_is_augmented, true);
             assert_eq!(handler.scene_is_augmented, true);
-            assert_eq!(handler.get_current_scene(), Scenes::Augmented);
+            assert_eq!(handler.current_scene, Scenes::Augmented);
             assert_eq!(handler.timer_can_run, false);
         })
     }

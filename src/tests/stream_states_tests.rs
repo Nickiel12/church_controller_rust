@@ -38,54 +38,54 @@ fn create_stream_states_class() {
     assert_eq!(stream_state.timer_length, 15.0);
     assert_eq!(stream_state.timer_can_run, true);
 
-    assert_eq!(stream_state.get_current_scene(), s_s::enums::Scenes::CameraDefault);
-    assert_eq!(stream_state.get_current_camera_sub_scene(), s_s::enums::Scenes::CameraDefault);
-    assert_eq!(stream_state.get_current_screen_sub_scene(), s_s::enums::Scenes::ScreenDefault);
+    assert_eq!(stream_state.current_scene, s_s::enums::Scenes::CameraDefault);
+    assert_eq!(stream_state.camera_sub_scene, s_s::enums::Scenes::CameraDefault);
+    assert_eq!(stream_state.screen_sub_scene, s_s::enums::Scenes::ScreenDefault);
 
 }
 
 #[test]
 fn scene_correctness(){
     let mut stream_state = s_s::stream_states_class::StreamState::new();
-    assert_eq!(stream_state.get_current_scene(), s_s::enums::Scenes::CameraDefault);
-    assert_eq!(stream_state.get_current_camera_sub_scene(), s_s::enums::Scenes::CameraDefault);
-    assert_eq!(stream_state.get_current_screen_sub_scene(), s_s::enums::Scenes::ScreenDefault);
+    assert_eq!(stream_state.current_scene, s_s::enums::Scenes::CameraDefault);
+    assert_eq!(stream_state.camera_sub_scene, s_s::enums::Scenes::CameraDefault);
+    assert_eq!(stream_state.screen_sub_scene, s_s::enums::Scenes::ScreenDefault);
 
     stream_state.update(StateUpdate::Scene(s_s::enums::Scenes::CameraWithUpperRight));
 
-    assert_eq!(stream_state.get_current_scene(), s_s::enums::Scenes::CameraWithUpperRight);
-    assert_eq!(stream_state.get_current_camera_sub_scene(), s_s::enums::Scenes::CameraWithUpperRight);
-    assert_eq!(stream_state.get_current_screen_sub_scene(), s_s::enums::Scenes::ScreenDefault);
+    assert_eq!(stream_state.current_scene, s_s::enums::Scenes::CameraWithUpperRight);
+    assert_eq!(stream_state.camera_sub_scene, s_s::enums::Scenes::CameraWithUpperRight);
+    assert_eq!(stream_state.screen_sub_scene, s_s::enums::Scenes::ScreenDefault);
 
     stream_state.update(StateUpdate::Scene(s_s::enums::Scenes::CameraWithLargeUpperRight));
 
-    assert_eq!(stream_state.get_current_scene(), s_s::enums::Scenes::CameraWithLargeUpperRight);
-    assert_eq!(stream_state.get_current_camera_sub_scene(), s_s::enums::Scenes::CameraWithLargeUpperRight);
-    assert_eq!(stream_state.get_current_screen_sub_scene(), s_s::enums::Scenes::ScreenDefault);
+    assert_eq!(stream_state.current_scene, s_s::enums::Scenes::CameraWithLargeUpperRight);
+    assert_eq!(stream_state.camera_sub_scene, s_s::enums::Scenes::CameraWithLargeUpperRight);
+    assert_eq!(stream_state.screen_sub_scene, s_s::enums::Scenes::ScreenDefault);
 
     stream_state.update(StateUpdate::Scene(s_s::enums::Scenes::CameraWithLowerRight));
 
-    assert_eq!(stream_state.get_current_scene(), s_s::enums::Scenes::CameraWithLowerRight);
-    assert_eq!(stream_state.get_current_camera_sub_scene(), s_s::enums::Scenes::CameraWithLowerRight);
-    assert_eq!(stream_state.get_current_screen_sub_scene(), s_s::enums::Scenes::ScreenDefault);
+    assert_eq!(stream_state.current_scene, s_s::enums::Scenes::CameraWithLowerRight);
+    assert_eq!(stream_state.camera_sub_scene, s_s::enums::Scenes::CameraWithLowerRight);
+    assert_eq!(stream_state.screen_sub_scene, s_s::enums::Scenes::ScreenDefault);
 
     stream_state.update(StateUpdate::Scene(s_s::enums::Scenes::ScreenDefault));
     
-    assert_eq!(stream_state.get_current_scene(), s_s::enums::Scenes::ScreenDefault);
-    assert_eq!(stream_state.get_current_screen_sub_scene(), s_s::enums::Scenes::ScreenDefault);
-    assert_eq!(stream_state.get_current_camera_sub_scene(), s_s::enums::Scenes::CameraWithLowerRight);
+    assert_eq!(stream_state.current_scene, s_s::enums::Scenes::ScreenDefault);
+    assert_eq!(stream_state.screen_sub_scene, s_s::enums::Scenes::ScreenDefault);
+    assert_eq!(stream_state.camera_sub_scene, s_s::enums::Scenes::CameraWithLowerRight);
 
     stream_state.update(StateUpdate::Scene(s_s::enums::Scenes::ScreenWithLowerRight));
     
-    assert_eq!(stream_state.get_current_scene(), s_s::enums::Scenes::ScreenWithLowerRight);
-    assert_eq!(stream_state.get_current_screen_sub_scene(), s_s::enums::Scenes::ScreenWithLowerRight);
-    assert_eq!(stream_state.get_current_camera_sub_scene(), s_s::enums::Scenes::CameraWithLowerRight);
+    assert_eq!(stream_state.current_scene, s_s::enums::Scenes::ScreenWithLowerRight);
+    assert_eq!(stream_state.screen_sub_scene, s_s::enums::Scenes::ScreenWithLowerRight);
+    assert_eq!(stream_state.camera_sub_scene, s_s::enums::Scenes::CameraWithLowerRight);
 
     stream_state.update(StateUpdate::Scene(s_s::enums::Scenes::ScreenWithUpperRight));
     
-    assert_eq!(stream_state.get_current_scene(), s_s::enums::Scenes::ScreenWithUpperRight);
-    assert_eq!(stream_state.get_current_screen_sub_scene(), s_s::enums::Scenes::ScreenWithUpperRight);
-    assert_eq!(stream_state.get_current_camera_sub_scene(), s_s::enums::Scenes::CameraWithLowerRight);
+    assert_eq!(stream_state.current_scene, s_s::enums::Scenes::ScreenWithUpperRight);
+    assert_eq!(stream_state.screen_sub_scene, s_s::enums::Scenes::ScreenWithUpperRight);
+    assert_eq!(stream_state.camera_sub_scene, s_s::enums::Scenes::CameraWithLowerRight);
 
 }
 

@@ -13,9 +13,9 @@ pub struct StreamState {
     pub timer_length: f32,
     pub timer_text: String,
 
-    current_scene: enums::Scenes,
-    camera_sub_scene: enums::Scenes,
-    screen_sub_scene: enums::Scenes,
+    pub current_scene: enums::Scenes,
+    pub camera_sub_scene: enums::Scenes,
+    pub screen_sub_scene: enums::Scenes,
 }
 
 impl Default for StreamState {
