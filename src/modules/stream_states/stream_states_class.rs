@@ -1,7 +1,7 @@
 use super::enums::{self, StateUpdate};
 
-#[derive(Debug)]
-pub struct StreamStates {
+#[derive(Debug, Clone)]
+pub struct StreamState {
     pub stream_running: bool,
     pub stream_is_muted: bool,
     pub computer_sound_is_on: bool,
@@ -18,9 +18,9 @@ pub struct StreamStates {
     screen_sub_scene: enums::Scenes,
 }
 
-impl Default for StreamStates {
+impl Default for StreamState {
     fn default() -> Self {
-        StreamStates {  
+        StreamState {  
             stream_running: false,
             stream_is_muted: false,
             computer_sound_is_on: true,
@@ -39,9 +39,9 @@ impl Default for StreamStates {
     }
 }
 
-impl StreamStates {
+impl StreamState {
     pub fn new() -> Self {
-        StreamStates{..Default::default()}
+        StreamState{..Default::default()}
     }
 
     pub fn update(&mut self, update: StateUpdate) {
@@ -76,10 +76,10 @@ impl StreamStates {
         match scene {
             enums::Scenes::CameraDefault | enums::Scenes::CameraWithUpperRight | 
             enums::Scenes::CameraWithLargeUpperRight | enums::Scenes::CameraWithLowerRight 
-            => {StreamStates::set_camera_scene(self, scene)},
+            => {StreamState::set_camera_scene(self, scene)},
             enums::Scenes::ScreenDefault | enums::Scenes::ScreenWithUpperRight |
             enums::Scenes::ScreenWithLowerRight 
-            => {StreamStates::set_screen_scene(self, scene)},
+            => {StreamState::set_screen_scene(self, scene)},
             enums::Scenes::Augmented => {self.current_scene = *scene;}   
         }
     }

@@ -1,31 +1,21 @@
-use std::sync::mpsc::{Receiver};
-
-use super::stream_states::{stream_states_class::StreamStates, enums::StateUpdate};
+use super::stream_states::{enums::StateUpdate, stream_states_class::StreamState};
 
 pub enum StateMessage {
-    StateUpdateContainer(StateUpdate),
+    StateUpdate(StateUpdate),
+    GetStates,
     CloseListener,
 }
 
-pub trait MessageListnerThread {
-    fn listen(self, rx: Receiver<StateMessage>) -> std::thread::JoinHandle<()>;
+pub trait MessageHandler {
+    fn handle_update(&mut self, update: StateUpdate) -> ();
+    fn get_states(&self) -> StreamState;
 }
 
-#[derive(Debug)]
-pub struct MessageHandler {
-    pub state: StreamStates,
-}
-
-impl MessageHandler {
-    pub fn new() -> Self {
-        return MessageHandler {
-            state: StreamStates::new(),
-        }
+impl MessageHandler for StreamState {
+    fn handle_update(&mut self, update: StateUpdate) {
+        self.update(update.clone());
+    }   
+    fn get_states(&self) -> StreamState{
+        self.clone()
     }
-
-    pub fn handle_update(&mut self, update: StateUpdate) {
-        self.state.update(update.clone());
-    }
-
-    
 }
