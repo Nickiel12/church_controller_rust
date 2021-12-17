@@ -1,6 +1,6 @@
 use std::{sync::mpsc::{Sender, self, Receiver}, thread::{JoinHandle, self}};
 
-use super::{message_handler::{MessageHandler, StateMessage}, stream_states::{enums::StateUpdate, stream_states_class::StreamState}};
+use super::{message_handler::{MessageHandler, StateMessage}, stream_states::{stream_states_class::StreamState}};
 
 
 pub struct StatesIOHandler {
@@ -16,7 +16,7 @@ impl StatesIOHandler {
         }
     }
 
-    pub fn start_socket_listener(&mut self, mut message_handler: impl MessageHandler + Send + 'static, socket_addr: &str) {
+    pub fn start_socket_listener(&mut self, mut message_handler: impl MessageHandler + Send + 'static) {
         let (tx, rx) = mpsc::channel::<StateMessage>();
         let (tx_1, rx_1) = mpsc::channel::<StreamState>();
         self.message_thread_tx = Some(tx);
