@@ -24,3 +24,9 @@ fn create_and_connect_to_listener() {
     drop(listener);
 }
 
+#[test]
+#[should_panic]
+fn panic_no_listener() {
+    let _outgoing = std::net::TcpStream::connect("localhost:5000").unwrap();
+}
+
