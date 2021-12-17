@@ -1,4 +1,4 @@
-use crate::make_listener;
+use crate::{make_listener, SERVER_ADDRESS};
 
 
 #[test]
@@ -9,16 +9,16 @@ fn it_works() {
 
 #[test]
 fn can_make_socket_listener(){
-    let listener = make_listener(String::from("localhost:5000"));
+    let listener = make_listener(SERVER_ADDRESS);
     drop(listener);
 }
 
 #[test]
 fn create_and_connect_to_listener() {
-    let listener = make_listener(String::from("localhost:5000"));
+    let listener = make_listener(SERVER_ADDRESS);
 
     let join_handle = std::thread::spawn(move || {
-        let _outgoing = std::net::TcpStream::connect("localhost:5000").unwrap();
+        let _outgoing = std::net::TcpStream::connect(SERVER_ADDRESS).unwrap();
     });
     join_handle.join().unwrap();
     drop(listener);
@@ -27,6 +27,6 @@ fn create_and_connect_to_listener() {
 #[test]
 #[should_panic]
 fn panic_no_listener() {
-    let _outgoing = std::net::TcpStream::connect("localhost:5000").unwrap();
+    let _outgoing = std::net::TcpStream::connect(SERVER_ADDRESS).unwrap();
 }
 
