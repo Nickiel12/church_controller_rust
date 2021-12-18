@@ -5,8 +5,6 @@ use std::sync::mpsc::Sender;
 use std::thread::{self, JoinHandle};
 use std::time::Duration;
 
-use super::message_handler::StateMessage;
-
 pub struct Socket{
 
 }
@@ -48,7 +46,6 @@ impl Socket {
             let output = String::from_utf8_lossy(&buffer[0..read_size]);
             update_tx.send(output.into_owned()).unwrap();
         }
-
 
     }
 }

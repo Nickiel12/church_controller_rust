@@ -3,7 +3,7 @@ use std::io::{Write};
 use std::thread;
 use std::time::Duration;
 
-use crate::{SERVER_ADDRESS, modules::socket_handler::Socket};
+use crate::modules::socket_handler::Socket;
 
 #[test]
 fn can_make_socket_listener(){
