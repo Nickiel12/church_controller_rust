@@ -48,3 +48,32 @@ fn can_handle_messages() {
     let message = rx_1.recv().unwrap();
     assert_eq!(message, String::from("this is a test"));
 }
+
+#[test]
+fn can_handle_delayed_messages() {
+    let listener = Socket::make_listener("localhost:5005");
+    let (tx_1, rx_1) = mpsc::channel::<String>();
+
+    let (mut flag, connection_handle) = Socket::handle_connections(listener, tx_1);
+
+    let join_handle = std::thread::spawn(move || {
+        let mut outgoing = std::net::TcpStream::connect("localhost:5005").unwrap();
+        outgoing.write("this is a test1\n".as_bytes()).unwrap();
+        thread::sleep(Duration::from_millis(500));
+        outgoing.write("this is a test3\n".as_bytes()).unwrap();
+        drop(outgoing);
+    });
+    join_handle.join().unwrap();
+    thread::sleep(Duration::from_millis(1000));
+
+    let message = rx_1.recv().unwrap();
+    println!("{}", message);
+    assert_eq!(message, String::from("this is a test1\n"));
+    
+    let message = rx_1.recv().unwrap();
+    println!("{}", message);
+    assert_eq!(message, String::from("this is a test3\n"));
+    
+    flag.set(false);
+    connection_handle.join().unwrap();
+}
