@@ -1,3 +1,8 @@
+use std::sync::mpsc;
+use std::io::{Write};
+use std::thread;
+use std::time::Duration;
+
 use modules::socket_handler::Socket;
 
 
@@ -9,9 +14,5 @@ mod modules;
 const SERVER_ADDRESS: &str = "localhost:5000";
 
 fn main() {
-    let listener = Socket::make_listener(SERVER_ADDRESS);
-
-    
-
-    drop(listener);
+    println!("hello world");
 }

@@ -33,7 +33,8 @@ impl StatesIOHandler {
                     }
                     StateMessage::CloseListener => {
                         tx_1.send(message_handler.get_states()).unwrap();
-                        break;}
+                        break;
+                    }
                 }
             }
             
