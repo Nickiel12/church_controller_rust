@@ -8,6 +8,7 @@ pub enum StateMessage {
 
 pub trait MessageHandler {
     fn handle_update(&mut self, update: StateUpdate) -> ();
+    fn create_update_from_string(update_json: String) -> StateUpdate;
     fn get_states(&self) -> StreamState;
 }
 
@@ -17,5 +18,9 @@ impl MessageHandler for StreamState {
     }   
     fn get_states(&self) -> StreamState{
         self.clone()
+    }
+    fn create_update_from_string(update_json: String) -> StateUpdate {
+        StateUpdate::ChangeSceneOnChangeSlideHotkey(false)
+
     }
 }
