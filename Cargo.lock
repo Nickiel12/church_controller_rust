@@ -5,3 +5,12 @@ version = 3
 [[package]]
 name = "church_controller"
 version = "0.1.0"
+dependencies = [
+ "workctl",
+]
+
+[[package]]
+name = "workctl"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5f505c6bb5d95d23e0069c0755c701d47ecb61ac013b6d0275968356deb00304"
