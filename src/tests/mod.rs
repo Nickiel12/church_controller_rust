@@ -10,3 +10,5 @@ pub mod message_handler_tests;
 pub mod states_io_handler_tests;
 #[cfg(test)]
 pub mod socket_handler_tests;
+#[cfg(test)]
+pub mod state_update_tests;
