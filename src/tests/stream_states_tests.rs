@@ -38,7 +38,7 @@ fn create_stream_states_class() {
     assert_eq!(stream_state.timer_length, 15.0);
     assert_eq!(stream_state.timer_can_run, true);
 
-    assert_eq!(stream_state.current_scene, s_s::enums::SubScenes::CameraDefault);
+    assert_eq!(stream_state.current_scene, s_s::enums::Scenes::Camera);
     assert_eq!(stream_state.camera_sub_scene, s_s::enums::SubScenes::CameraDefault);
     assert_eq!(stream_state.screen_sub_scene, s_s::enums::SubScenes::ScreenDefault);
 
@@ -47,43 +47,45 @@ fn create_stream_states_class() {
 #[test]
 fn scene_correctness(){
     let mut stream_state = s_s::stream_states_class::StreamState::new();
-    assert_eq!(stream_state.current_scene, s_s::enums::SubScenes::CameraDefault);
+    assert_eq!(stream_state.current_scene, s_s::enums::Scenes::Camera);
     assert_eq!(stream_state.camera_sub_scene, s_s::enums::SubScenes::CameraDefault);
     assert_eq!(stream_state.screen_sub_scene, s_s::enums::SubScenes::ScreenDefault);
 
-    stream_state.update(StateUpdate::Scene(s_s::enums::SubScenes::CameraWithUpperRight));
+    stream_state.update(StateUpdate::SubScene(s_s::enums::SubScenes::CameraWithUpperRight));
 
-    assert_eq!(stream_state.current_scene, s_s::enums::SubScenes::CameraWithUpperRight);
     assert_eq!(stream_state.camera_sub_scene, s_s::enums::SubScenes::CameraWithUpperRight);
     assert_eq!(stream_state.screen_sub_scene, s_s::enums::SubScenes::ScreenDefault);
 
-    stream_state.update(StateUpdate::Scene(s_s::enums::SubScenes::CameraWithLargeUpperRight));
+    stream_state.update(StateUpdate::SubScene(s_s::enums::SubScenes::CameraWithLargeUpperRight));
 
-    assert_eq!(stream_state.current_scene, s_s::enums::SubScenes::CameraWithLargeUpperRight);
     assert_eq!(stream_state.camera_sub_scene, s_s::enums::SubScenes::CameraWithLargeUpperRight);
     assert_eq!(stream_state.screen_sub_scene, s_s::enums::SubScenes::ScreenDefault);
 
-    stream_state.update(StateUpdate::Scene(s_s::enums::SubScenes::CameraWithLowerRight));
+    stream_state.update(StateUpdate::SubScene(s_s::enums::SubScenes::CameraWithLowerRight));
 
-    assert_eq!(stream_state.current_scene, s_s::enums::SubScenes::CameraWithLowerRight);
     assert_eq!(stream_state.camera_sub_scene, s_s::enums::SubScenes::CameraWithLowerRight);
     assert_eq!(stream_state.screen_sub_scene, s_s::enums::SubScenes::ScreenDefault);
 
-    stream_state.update(StateUpdate::Scene(s_s::enums::SubScenes::ScreenDefault));
+    stream_state.update(StateUpdate::SubScene(s_s::enums::SubScenes::ScreenDefault));
+    stream_state.update(StateUpdate::Scene(s_s::enums::Scenes::Screen));
     
-    assert_eq!(stream_state.current_scene, s_s::enums::SubScenes::ScreenDefault);
+    assert_eq!(stream_state.current_scene, s_s::enums::Scenes::Screen);
     assert_eq!(stream_state.screen_sub_scene, s_s::enums::SubScenes::ScreenDefault);
     assert_eq!(stream_state.camera_sub_scene, s_s::enums::SubScenes::CameraWithLowerRight);
 
-    stream_state.update(StateUpdate::Scene(s_s::enums::SubScenes::ScreenWithLowerRight));
+    stream_state.update(StateUpdate::SubScene(s_s::enums::SubScenes::ScreenWithLowerRight));
     
-    assert_eq!(stream_state.current_scene, s_s::enums::SubScenes::ScreenWithLowerRight);
     assert_eq!(stream_state.screen_sub_scene, s_s::enums::SubScenes::ScreenWithLowerRight);
     assert_eq!(stream_state.camera_sub_scene, s_s::enums::SubScenes::CameraWithLowerRight);
 
-    stream_state.update(StateUpdate::Scene(s_s::enums::SubScenes::ScreenWithUpperRight));
+    stream_state.update(StateUpdate::SubScene(s_s::enums::SubScenes::ScreenWithUpperRight));
     
-    assert_eq!(stream_state.current_scene, s_s::enums::SubScenes::ScreenWithUpperRight);
+    assert_eq!(stream_state.screen_sub_scene, s_s::enums::SubScenes::ScreenWithUpperRight);
+    assert_eq!(stream_state.camera_sub_scene, s_s::enums::SubScenes::CameraWithLowerRight);
+
+    stream_state.update(StateUpdate::Scene(s_s::enums::Scenes::Augmented));
+
+    assert_eq!(stream_state.current_scene, s_s::enums::Scenes::Augmented);
     assert_eq!(stream_state.screen_sub_scene, s_s::enums::SubScenes::ScreenWithUpperRight);
     assert_eq!(stream_state.camera_sub_scene, s_s::enums::SubScenes::CameraWithLowerRight);
 
