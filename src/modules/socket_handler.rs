@@ -33,19 +33,22 @@ impl Socket {
 
     pub fn handle_client(mut stream: TcpStream, update_tx: Sender<String>, program_shutdown_flag: sync_flag::SyncFlagRx) {
         let mut buffer = [0; 1024];
-
-        loop {
-            let read_size = stream.read(&mut buffer).unwrap();
-    
-            //Tcp is supposed to have a 0 byte read if closed by client
-            if read_size == 0 || !program_shutdown_flag.get() {
-                stream.shutdown(Shutdown::Both).unwrap();
-                thread::sleep(Duration::from_millis(75));
-                break;
+        stream.set_read_timeout(Some(Duration::from_millis(100))).expect("Could not set a read timeout");
+        while program_shutdown_flag.get() {
+            match stream.read(&mut buffer) {
+                Err(_) => {continue},
+                Ok(read_size) => {
+                    //Tcp is supposed to have a 0 byte read if closed by client
+                    if read_size == 0 || !program_shutdown_flag.get() {
+                        break;
+        
+                    } else {
+                        let output = String::from_utf8_lossy(&buffer[0..read_size]);
+                        update_tx.send(output.into_owned()).unwrap();
+                    }
+                }
             }
-            let output = String::from_utf8_lossy(&buffer[0..read_size]);
-            update_tx.send(output.into_owned()).unwrap();
         }
-
+        stream.shutdown(Shutdown::Both).unwrap();
     }
 }
