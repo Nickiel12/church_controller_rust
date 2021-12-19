@@ -22,7 +22,7 @@ impl Socket {
             listener.set_nonblocking(true).unwrap();
             while thread_stop_flag.get() {
                 for (stream, _addr) in listener.accept() {
-                    Socket::handle_client(stream, messenger_tx.clone());
+                    Socket::handle_client(stream, messenger_tx.clone(), thread_stop_flag.clone());
                 }
                 thread::sleep(Duration::from_millis(100));
             }
@@ -31,14 +31,14 @@ impl Socket {
         (tx, handle)
     }
 
-    pub fn handle_client(mut stream: TcpStream, update_tx: Sender<String>) {
+    pub fn handle_client(mut stream: TcpStream, update_tx: Sender<String>, program_shutdown_flag: sync_flag::SyncFlagRx) {
         let mut buffer = [0; 1024];
 
         loop {
             let read_size = stream.read(&mut buffer).unwrap();
     
             //Tcp is supposed to have a 0 byte read if closed by client
-            if read_size == 0 {
+            if read_size == 0 || !program_shutdown_flag.get() {
                 stream.shutdown(Shutdown::Both).unwrap();
                 thread::sleep(Duration::from_millis(75));
                 break;
