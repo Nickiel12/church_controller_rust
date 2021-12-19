@@ -52,7 +52,7 @@ impl StateUpdate {
                     //Unimplemented
                     "Next_Slide" |
                     "Prev_Slide" |
-                    _ => {panic!("trying to use a button type I don't know!")}
+                    _ => {panic!("trying to use a button type I don't know!: {}", value)}
                 }
             },
             "Timer_Length" => {
