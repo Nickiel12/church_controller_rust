@@ -1,6 +1,6 @@
 use std::{sync::mpsc::{self, Receiver}, thread::{self, JoinHandle}};
 
-use crate::modules::{message_handler::{MessageHandler, StateMessage}, stream_states::{state_update::StateUpdate, enums::SubScenes, stream_states_class::StreamState}};
+use crate::modules::{message_handler::{MessageHandler, StateMessage}, stream_states::{state_update::StateUpdate, enums::{Scenes}, stream_states_class::StreamState}};
 
 
 #[test]
@@ -53,7 +53,7 @@ fn message_handler_can_handle_multiple_messages() {
             assert_eq!(handler.computer_sound_is_on, false);
             assert_eq!(handler.scene_is_augmented, true);
             assert_eq!(handler.scene_is_augmented, true);
-            assert_eq!(handler.current_scene, SubScenes::Augmented);
+            assert_eq!(handler.current_scene, Scenes::Augmented);
             assert_eq!(handler.timer_can_run, false);
         })
     }
