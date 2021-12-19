@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 workctl = "0.2.0"
 ctrlc = "3.2.1"
+serde_json = "1.0"
