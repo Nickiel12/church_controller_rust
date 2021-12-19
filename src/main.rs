@@ -3,6 +3,8 @@ use std::{sync::mpsc, time::Duration};
 use modules::{socket_handler::Socket, stream_states::stream_states_class::StreamState, message_handler::{MessageHandler, StateMessage}};
 use workctl::sync_flag;
 
+use crate::modules::stream_states::state_update::StateUpdate;
+
 mod tests;
 mod modules;
 
@@ -27,7 +29,8 @@ fn main() {
         match from_socket_rx.recv_timeout(Duration::from_millis(100)) {
             Ok(message) => {
                 println!("{}", message);
-                let update = <StreamState as MessageHandler>::create_update_from_string(message);
+                let json = serde_json::from_str(&message[1..]).unwrap();
+                let update = StateUpdate::json_to_state_update(json);
             },
             Err(_) => {continue},
         }
