@@ -1,4 +1,4 @@
-use super::enums::Scenes;
+use super::enums::{SubScenes, Scenes};
 use super::state_update::StateUpdate;
 
 #[derive(Debug, Clone)]
@@ -15,8 +15,8 @@ pub struct StreamState {
     pub timer_text: String,
 
     pub current_scene: Scenes,
-    pub camera_sub_scene: Scenes,
-    pub screen_sub_scene: Scenes,
+    pub camera_sub_scene: SubScenes,
+    pub screen_sub_scene: SubScenes,
 }
 
 impl Default for StreamState {
@@ -33,9 +33,9 @@ impl Default for StreamState {
             timer_length: 15.0,
             timer_text: String::from("0.0"),
             
-            current_scene: Scenes::CameraDefault,
-            camera_sub_scene: Scenes::CameraDefault,
-            screen_sub_scene: Scenes::ScreenDefault,
+            current_scene: Scenes::Camera,
+            camera_sub_scene: SubScenes::CameraDefault,
+            screen_sub_scene: SubScenes::ScreenDefault,
         }
     }
 }
@@ -53,33 +53,42 @@ impl StreamState {
             StateUpdate::ChangeSceneOnChangeSlideHotkey(new_val) => {self.change_scene_on_change_slide_hotkey = new_val;},
             StateUpdate::TimerCanRun(new_val)  => {self.timer_can_run = new_val;},
             StateUpdate::TimerLength(new_val)   => {self.timer_length  = new_val;},
-            StateUpdate::TimerText(new_val)  =>  {self.timer_text    = new_val;},
-            StateUpdate::Scene(new_val)      =>  {self.change_scene(&new_val)},
+            StateUpdate::TimerText(new_val)   => {self.timer_text    = new_val;},
+            StateUpdate::Scene(new_val)       => {self.change_scene(&new_val)},
+            StateUpdate::SubScene(new_val)      =>  {self.change_sub_scene(&new_val)},
             StateUpdate::SceneIsAugmented(new_val) => {
                 self.scene_is_augmented = new_val;
                 self.change_scene(&Scenes::Augmented)},
+            StateUpdate::UpdateClient => todo!(),
         }
     }
 
     pub fn change_scene(&mut self, scene: &Scenes) {
         match scene {
-            Scenes::CameraDefault | Scenes::CameraWithUpperRight | 
-            Scenes::CameraWithLargeUpperRight | Scenes::CameraWithLowerRight 
-            => {StreamState::set_camera_scene(self, scene)},
-            Scenes::ScreenDefault | Scenes::ScreenWithUpperRight |
-            Scenes::ScreenWithLowerRight 
-            => {StreamState::set_screen_scene(self, scene)},
-            Scenes::Augmented => {self.current_scene = *scene;}   
+            Scenes::Augmented => {self.current_scene = *scene;}
+            Scenes::Camera => {self.current_scene = *scene},
+            Scenes::Screen => {self.current_scene = *scene}, 
         }
     }
 
-    fn set_camera_scene(&mut self, scene: &Scenes) {
-        self.camera_sub_scene = scene.clone();
-        self.current_scene = scene.clone();
+    pub fn change_sub_scene(&mut self, scene: &SubScenes) {
+        match scene {
+            SubScenes::CameraDefault | SubScenes::CameraWithUpperRight | 
+            SubScenes::CameraWithLargeUpperRight | SubScenes::CameraWithLowerRight 
+            => {StreamState::set_camera_scene(self, scene)},
+            SubScenes::ScreenDefault | SubScenes::ScreenWithUpperRight |
+            SubScenes::ScreenWithLowerRight 
+            => {StreamState::set_screen_scene(self, scene)},
+        }
     }
 
-    fn set_screen_scene(&mut self, scene: &Scenes) {
+    fn set_camera_scene(&mut self, scene: &SubScenes) {
+        self.camera_sub_scene = scene.clone();
+        self.current_scene = Scenes::Camera;
+    }
+
+    fn set_screen_scene(&mut self, scene: &SubScenes) {
         self.screen_sub_scene = scene.clone();
-        self.current_scene = scene.clone();
+        self.current_scene = Scenes::Screen;
     }
 }

@@ -1,6 +1,6 @@
 
 #[derive(PartialEq, Debug, Clone, Copy)]
-pub enum Scenes {
+pub enum SubScenes {
     CameraDefault,
     CameraWithUpperRight,
     CameraWithLargeUpperRight,
@@ -10,6 +10,12 @@ pub enum Scenes {
     ScreenWithUpperRight,
     ScreenWithLowerRight,
 
+}
+
+#[derive(PartialEq, Debug, Clone, Copy)]
+pub enum Scenes {
+    Camera,
+    Screen,
     Augmented
 }
 
