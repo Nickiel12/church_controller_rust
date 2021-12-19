@@ -2,7 +2,7 @@ use std::sync::mpsc;
 use std::thread;
 
 use crate::modules::stream_states as s_s;
-use crate::modules::stream_states::enums::{StateUpdate};
+use crate::modules::stream_states::state_update::StateUpdate;
 
 #[test]
 fn has_all_enums() {

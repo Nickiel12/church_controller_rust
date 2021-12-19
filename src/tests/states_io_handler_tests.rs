@@ -1,6 +1,6 @@
 use std::thread;
 
-use crate::modules::{states_io_handler::{StatesIOHandler}, message_handler::{StateMessage}, stream_states::{stream_states_class::StreamState, enums::StateUpdate}};
+use crate::modules::{states_io_handler::{StatesIOHandler}, message_handler::{StateMessage}, stream_states::{stream_states_class::StreamState, state_update::StateUpdate}};
 
 
 #[test]

@@ -1,4 +1,5 @@
-use super::enums::{self, StateUpdate};
+use super::enums::Scenes;
+use super::state_update::StateUpdate;
 
 #[derive(Debug, Clone)]
 pub struct StreamState {
@@ -13,9 +14,9 @@ pub struct StreamState {
     pub timer_length: f32,
     pub timer_text: String,
 
-    pub current_scene: enums::Scenes,
-    pub camera_sub_scene: enums::Scenes,
-    pub screen_sub_scene: enums::Scenes,
+    pub current_scene: Scenes,
+    pub camera_sub_scene: Scenes,
+    pub screen_sub_scene: Scenes,
 }
 
 impl Default for StreamState {
@@ -32,9 +33,9 @@ impl Default for StreamState {
             timer_length: 15.0,
             timer_text: String::from("0.0"),
             
-            current_scene: enums::Scenes::CameraDefault,
-            camera_sub_scene: enums::Scenes::CameraDefault,
-            screen_sub_scene: enums::Scenes::ScreenDefault,
+            current_scene: Scenes::CameraDefault,
+            camera_sub_scene: Scenes::CameraDefault,
+            screen_sub_scene: Scenes::ScreenDefault,
         }
     }
 }
@@ -56,28 +57,28 @@ impl StreamState {
             StateUpdate::Scene(new_val)      =>  {self.change_scene(&new_val)},
             StateUpdate::SceneIsAugmented(new_val) => {
                 self.scene_is_augmented = new_val;
-                self.change_scene(&enums::Scenes::Augmented)},
+                self.change_scene(&Scenes::Augmented)},
         }
     }
 
-    pub fn change_scene(&mut self, scene: &enums::Scenes) {
+    pub fn change_scene(&mut self, scene: &Scenes) {
         match scene {
-            enums::Scenes::CameraDefault | enums::Scenes::CameraWithUpperRight | 
-            enums::Scenes::CameraWithLargeUpperRight | enums::Scenes::CameraWithLowerRight 
+            Scenes::CameraDefault | Scenes::CameraWithUpperRight | 
+            Scenes::CameraWithLargeUpperRight | Scenes::CameraWithLowerRight 
             => {StreamState::set_camera_scene(self, scene)},
-            enums::Scenes::ScreenDefault | enums::Scenes::ScreenWithUpperRight |
-            enums::Scenes::ScreenWithLowerRight 
+            Scenes::ScreenDefault | Scenes::ScreenWithUpperRight |
+            Scenes::ScreenWithLowerRight 
             => {StreamState::set_screen_scene(self, scene)},
-            enums::Scenes::Augmented => {self.current_scene = *scene;}   
+            Scenes::Augmented => {self.current_scene = *scene;}   
         }
     }
 
-    fn set_camera_scene(&mut self, scene: &enums::Scenes) {
+    fn set_camera_scene(&mut self, scene: &Scenes) {
         self.camera_sub_scene = scene.clone();
         self.current_scene = scene.clone();
     }
 
-    fn set_screen_scene(&mut self, scene: &enums::Scenes) {
+    fn set_screen_scene(&mut self, scene: &Scenes) {
         self.screen_sub_scene = scene.clone();
         self.current_scene = scene.clone();
     }

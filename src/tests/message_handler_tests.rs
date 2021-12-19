@@ -1,6 +1,6 @@
 use std::{sync::mpsc::{self, Receiver}, thread::{self, JoinHandle}};
 
-use crate::modules::{message_handler::{MessageHandler, StateMessage}, stream_states::{enums::{StateUpdate, Scenes}, stream_states_class::StreamState}};
+use crate::modules::{message_handler::{MessageHandler, StateMessage}, stream_states::{state_update::StateUpdate, enums::Scenes, stream_states_class::StreamState}};
 
 
 #[test]
