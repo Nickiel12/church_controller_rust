@@ -60,6 +60,7 @@ impl StreamState {
                 self.scene_is_augmented = new_val;
                 self.change_scene(&Scenes::Augmented)},
             StateUpdate::UpdateClient => todo!(),
+            StateUpdate::ComputerMediaDoPause(do_pause) => todo!(),
         }
     }
 
