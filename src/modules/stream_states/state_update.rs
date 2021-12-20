@@ -1,3 +1,5 @@
+use std::ops::Add;
+
 use super::enums::{SubScenes, Scenes};
 use serde_json::Value;
 
@@ -8,7 +10,7 @@ pub enum StateUpdate {
     StreamIsMuted(bool),
     ComputerSoundIsOn(bool),
     ComputerMediaDoPause(bool),
-    ChangeSceneOnChangeSlideHotkey(bool),
+    ChangeSceneOnChangeSlide(bool),
     SceneIsAugmented(bool),
     TimerCanRun(bool),
     TimerLength(f32),
@@ -29,11 +31,11 @@ impl StateUpdate {
                     //Master Scenes
                     "Scene_Camera" => {StateUpdate::Scene(Scenes::Camera)}
                     "Scene_Screen" => {StateUpdate::Scene(Scenes::Screen)}
-                    "Augmented"    => {StateUpdate::SceneIsAugmented(incoming_json["data"].as_bool().unwrap())},
+                    "Scene_Is_Augmented"    => {StateUpdate::SceneIsAugmented(incoming_json["data"].as_bool().unwrap())},
                     
                     //Slide changing behavior
-                    "Auto_Change_To_Camera" => {StateUpdate::TimerCanRun(incoming_json["data"].as_bool().unwrap())}
-                    "Change_With_Clicker" => {StateUpdate::ChangeSceneOnChangeSlideHotkey(incoming_json["data"].as_bool().unwrap())},
+                    "Timer_Can_Run" => {StateUpdate::TimerCanRun(incoming_json["data"].as_bool().unwrap())}
+                    "Change_With_Clicker" => {StateUpdate::ChangeSceneOnChangeSlide(incoming_json["data"].as_bool().unwrap())},
                     
                     //Extra Toggles
                     "Toggle_Computer_Volume" => {StateUpdate::ComputerSoundIsOn(incoming_json["data"].as_bool().unwrap())},
@@ -66,6 +68,72 @@ impl StateUpdate {
                 panic!("State Update Could Not Cast the json: {:?}", incoming_json.as_str());
             }
         }
+    }
 
+    pub fn to_json(&self) -> serde_json::Value {
+        match self {
+            StateUpdate::StreamRunning(is_true) => {
+                serde_json::json!({
+                "type": "button",
+                "button": "Stream_Running",
+                "data": is_true
+            })},
+            StateUpdate::StreamIsMuted(is_true) => {
+                serde_json::json!({
+                    "type": "button",
+                    "button": "Stream_Is_Muted",
+                    "data": is_true
+            })},
+            StateUpdate::ComputerSoundIsOn(is_true) => {
+                serde_json::json!({
+                    "type": "button",
+                    "button": "Computer_Sound_Is_On",
+                    "data": is_true,
+            })},
+            StateUpdate::ChangeSceneOnChangeSlide(is_true) => {
+                serde_json::json!({
+                    "type": "button",
+                    "button": "Change_With_Clicker",
+                    "data": is_true,
+            })},
+            StateUpdate::SceneIsAugmented(is_true) => {
+                serde_json::json!({
+                    "type": "button",
+                    "type": "Scene_Is_Augmented",
+                    "data": is_true,
+            })},
+            StateUpdate::TimerCanRun(is_true) => {
+                serde_json::json!({
+                    "type": "button",
+                    "button": "Timer_Can_Run",
+                    "data": is_true,
+            })},
+            StateUpdate::TimerLength(length) => {
+                serde_json::json!({
+                    "type": "button",
+                    "button": "Timer_Length",
+                    "data": length,
+            })},
+            StateUpdate::TimerText(text) => {
+                serde_json::json!({
+                    "type": "button",
+                    "button": "Timer_Text",
+                    "data": text,
+            })},
+            StateUpdate::SubScene(scene) => {
+                serde_json::json!({
+                    "type": "button",
+                    "button": "SubScene",
+                    "SubScene": scene.to_string(),
+            })},
+            StateUpdate::Scene(scene) => {
+                serde_json::json!({
+                    "type": "button",
+                    "button": "Scene",
+                    "Scene": scene.to_string(),
+            })},
+            StateUpdate::ComputerMediaDoPause(is_true) => todo!(),
+            StateUpdate::UpdateClient => todo!(),
+        }
     }
 }
