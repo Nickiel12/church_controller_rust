@@ -1,4 +1,4 @@
-use crate::modules::stream_states::{state_update::StateUpdate, enums::Scenes};
+use crate::modules::stream_states::{state_update::StateUpdate, enums::{Scenes, SubScenes}};
 
 
 
@@ -56,4 +56,47 @@ fn test_json_to_state_update() {
         "{\"type\": \"button\", \"button\": \"Media_Pause_Play\", \"data\": false}"
         ).unwrap()), StateUpdate::ComputerMediaDoPause(false));
 
+    assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
+        "{\"type\": \"button\", \"button\": \"Camera_None\"}"
+        ).unwrap()), StateUpdate::SubScene(SubScenes::CameraDefault));
+    
+    assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
+        "{\"type\": \"button\", \"button\": \"Camera_Top_Right\"}"
+        ).unwrap()), StateUpdate::SubScene(SubScenes::CameraWithUpperRight));
+
+    assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
+        "{\"type\": \"button\", \"button\": \"Camera_Bottom_Right\"}"
+        ).unwrap()), StateUpdate::SubScene(SubScenes::CameraWithLowerRight));
+    
+    assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
+        "{\"type\": \"button\", \"button\": \"Camera_Bottom_Left\"}"
+        ).unwrap()), StateUpdate::SubScene(SubScenes::CameraWithLargeUpperRight));
+
+    assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
+        "{\"type\": \"button\", \"button\": \"Screen_None\"}"
+        ).unwrap()), StateUpdate::SubScene(SubScenes::ScreenDefault));
+
+    assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
+        "{\"type\": \"button\", \"button\": \"Screen_Top_Right\"}"
+        ).unwrap()), StateUpdate::SubScene(SubScenes::ScreenWithUpperRight));
+
+    assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
+        "{\"type\": \"button\", \"button\": \"Screen_Bottom_Right\"}"
+        ).unwrap()), StateUpdate::SubScene(SubScenes::ScreenWithLowerRight));
+    
+    assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
+        "{\"type\": \"Timer_Length\", \"data\": 5.5}"
+    ).unwrap()), StateUpdate::TimerLength(5.5));
+
+    assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
+        "{\"type\": \"update\"}"
+    ).unwrap()), StateUpdate::UpdateClient);
+}
+
+#[test]
+#[should_panic]
+fn test_json_to_state_update_fails() {
+    StateUpdate::json_to_state_update(serde_json::from_str(
+        "{\"type\": \"AnUnknownType\"}"
+    ).unwrap());
 }
