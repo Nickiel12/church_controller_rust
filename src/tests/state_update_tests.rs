@@ -5,15 +5,15 @@ use crate::modules::stream_states::{state_update::StateUpdate, enums::{Scenes, S
 #[test]
 fn test_json_to_state_update() {
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
-            "{\"type\": \"update\", \"update\": \"Scene\": \"data\": \"Scene_Camera\"}"
+            "{\"type\": \"update\", \"update\": \"Scene\", \"data\": \"Scene_Camera\"}"
         ).unwrap()), StateUpdate::Scene(Scenes::Camera));
 
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
-            "{\"type\": \"update\", \"update\": \"Scene\": \"data\": \"Scene_Screen\"}"
+            "{\"type\": \"update\", \"update\": \"Scene\", \"data\": \"Scene_Screen\"}"
         ).unwrap()), StateUpdate::Scene(Scenes::Screen));
 
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
-            "{\"type\": \"update\", \"update\": \"Augmented\", \"data\": true}"
+            "{\"type\": \"update\", \"update\": \"Scene_Is_Augmented\", \"data\": true}"
         ).unwrap()), StateUpdate::SceneIsAugmented(true));
 
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
@@ -57,31 +57,31 @@ fn test_json_to_state_update() {
         ).unwrap()), StateUpdate::ComputerMediaDoPause(false));
 
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
-        "{\"type\": \"update\", \"update\": \"SubScene\": \"data\": \"Camera_None\"}"
+        "{\"type\": \"update\", \"update\": \"SubScene\", \"data\": \"Camera_None\"}"
         ).unwrap()), StateUpdate::SubScene(SubScenes::CameraDefault));
     
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
-        "{\"type\": \"update\", \"update\": \"SubScene\": \"data\": \"Camera_Top_Right\"}"
+        "{\"type\": \"update\", \"update\": \"SubScene\", \"data\": \"Camera_Top_Right\"}"
         ).unwrap()), StateUpdate::SubScene(SubScenes::CameraWithUpperRight));
 
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
-        "{\"type\": \"update\", \"update\": \"SubScene\": \"data\": \"Camera_Bottom_Right\"}"
+        "{\"type\": \"update\", \"update\": \"SubScene\", \"data\": \"Camera_Bottom_Right\"}"
         ).unwrap()), StateUpdate::SubScene(SubScenes::CameraWithLowerRight));
     
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
-        "{\"type\": \"update\", \"update\": \"SubScene\": \"data\": \"Camera_Bottom_Left\"}"
+        "{\"type\": \"update\", \"update\": \"SubScene\", \"data\": \"Camera_Bottom_Left\"}"
         ).unwrap()), StateUpdate::SubScene(SubScenes::CameraWithLargeUpperRight));
 
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
-        "{\"type\": \"update\", \"update\": \"SubScene\": \"data\": \"Screen_None\"}"
+        "{\"type\": \"update\", \"update\": \"SubScene\", \"data\": \"Screen_None\"}"
         ).unwrap()), StateUpdate::SubScene(SubScenes::ScreenDefault));
 
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
-        "{\"type\": \"update\", \"update\": \"SubScene\": \"data\": \"Screen_Top_Right\"}"
+        "{\"type\": \"update\", \"update\": \"SubScene\", \"data\": \"Screen_Top_Right\"}"
         ).unwrap()), StateUpdate::SubScene(SubScenes::ScreenWithUpperRight));
 
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
-        "{\"type\": \"update\", \"update\": \"SubScene\": \"data\":\"Screen_Bottom_Right\"}"
+        "{\"type\": \"update\", \"update\": \"SubScene\", \"data\":\"Screen_Bottom_Right\"}"
         ).unwrap()), StateUpdate::SubScene(SubScenes::ScreenWithLowerRight));
     
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
@@ -99,4 +99,10 @@ fn test_json_to_state_update_fails() {
     StateUpdate::json_to_state_update(serde_json::from_str(
         "{\"type\": \"AnUnknownType\"}"
     ).unwrap());
+}
+
+#[test]
+fn test_state_update_to_json() {
+    //Note, this one needs to is dependant on test_json_to_update for correctedness
+    assert_eq!(StateUpdate::StreamRunning(true), (StateUpdate::json_to_state_update(StateUpdate::StreamRunning(true).to_json())));
 }
