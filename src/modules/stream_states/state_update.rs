@@ -36,7 +36,11 @@ impl StateUpdate {
                     //Slide changing behavior
                     "Timer_Can_Run" => {StateUpdate::TimerCanRun(incoming_json["data"].as_bool().unwrap())}
                     "Change_With_Clicker" => {StateUpdate::ChangeSceneOnChangeSlide(incoming_json["data"].as_bool().unwrap())},
-                    
+                    "Timer_Length" => {
+                        let new_timer_length = &incoming_json["data"];
+                        StateUpdate::TimerLength(new_timer_length.as_f64().unwrap() as f32)
+                    },
+
                     //Extra Toggles
                     "Toggle_Computer_Volume" => {StateUpdate::ComputerSoundIsOn(incoming_json["data"].as_bool().unwrap())},
                     "Toggle_Stream_Volume" => {StateUpdate::StreamIsMuted(incoming_json["data"].as_bool().unwrap())},
@@ -51,18 +55,13 @@ impl StateUpdate {
                     "Screen_Top_Right" => {StateUpdate::SubScene(SubScenes::ScreenWithUpperRight)},
                     "Screen_Bottom_Right" => {StateUpdate::SubScene(SubScenes::ScreenWithLowerRight)},
                     
+                    "all" => {StateUpdate::UpdateClient},
+
                     //Unimplemented
                     "Next_Slide" |
                     "Prev_Slide" |
                     _ => {panic!("trying to use a button type I don't know!: {}", value)}
                 }
-            },
-            "Timer_Length" => {
-                let new_timer_length = &incoming_json["data"];
-                StateUpdate::TimerLength(new_timer_length.as_f64().unwrap() as f32)
-            },
-            "update" => {
-                StateUpdate::UpdateClient
             },
             _ => {
                 panic!("State Update Could Not Cast the json: {:?}", incoming_json.as_str());

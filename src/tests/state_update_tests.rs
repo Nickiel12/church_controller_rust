@@ -5,11 +5,11 @@ use crate::modules::stream_states::{state_update::StateUpdate, enums::{Scenes, S
 #[test]
 fn test_json_to_state_update() {
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
-            "{\"type\": \"update\", \"update\": \"Scene_Camera\"}"
+            "{\"type\": \"update\", \"update\": \"Scene\": \"data\": \"Scene_Camera\"}"
         ).unwrap()), StateUpdate::Scene(Scenes::Camera));
 
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
-            "{\"type\": \"update\", \"update\": \"Scene_Screen\"}"
+            "{\"type\": \"update\", \"update\": \"Scene\": \"data\": \"Scene_Screen\"}"
         ).unwrap()), StateUpdate::Scene(Scenes::Screen));
 
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
@@ -57,39 +57,39 @@ fn test_json_to_state_update() {
         ).unwrap()), StateUpdate::ComputerMediaDoPause(false));
 
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
-        "{\"type\": \"update\", \"update\": \"Camera_None\"}"
+        "{\"type\": \"update\", \"update\": \"SubScene\": \"data\": \"Camera_None\"}"
         ).unwrap()), StateUpdate::SubScene(SubScenes::CameraDefault));
     
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
-        "{\"type\": \"update\", \"update\": \"Camera_Top_Right\"}"
+        "{\"type\": \"update\", \"update\": \"SubScene\": \"data\": \"Camera_Top_Right\"}"
         ).unwrap()), StateUpdate::SubScene(SubScenes::CameraWithUpperRight));
 
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
-        "{\"type\": \"update\", \"update\": \"Camera_Bottom_Right\"}"
+        "{\"type\": \"update\", \"update\": \"SubScene\": \"data\": \"Camera_Bottom_Right\"}"
         ).unwrap()), StateUpdate::SubScene(SubScenes::CameraWithLowerRight));
     
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
-        "{\"type\": \"update\", \"update\": \"Camera_Bottom_Left\"}"
+        "{\"type\": \"update\", \"update\": \"SubScene\": \"data\": \"Camera_Bottom_Left\"}"
         ).unwrap()), StateUpdate::SubScene(SubScenes::CameraWithLargeUpperRight));
 
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
-        "{\"type\": \"update\", \"update\": \"Screen_None\"}"
+        "{\"type\": \"update\", \"update\": \"SubScene\": \"data\": \"Screen_None\"}"
         ).unwrap()), StateUpdate::SubScene(SubScenes::ScreenDefault));
 
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
-        "{\"type\": \"update\", \"update\": \"Screen_Top_Right\"}"
+        "{\"type\": \"update\", \"update\": \"SubScene\": \"data\": \"Screen_Top_Right\"}"
         ).unwrap()), StateUpdate::SubScene(SubScenes::ScreenWithUpperRight));
 
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
-        "{\"type\": \"update\", \"update\": \"Screen_Bottom_Right\"}"
+        "{\"type\": \"update\", \"update\": \"SubScene\": \"data\":\"Screen_Bottom_Right\"}"
         ).unwrap()), StateUpdate::SubScene(SubScenes::ScreenWithLowerRight));
     
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
-        "{\"type\": \"Timer_Length\", \"data\": 5.5}"
+        "{\"type\": \"update\", \"update\": \"Timer_Length\" \"data\": 5.5}"
     ).unwrap()), StateUpdate::TimerLength(5.5));
 
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
-        "{\"type\": \"update\"}"
+        "{\"type\": \"update\", \"update\":\"all\"}"
     ).unwrap()), StateUpdate::UpdateClient);
 }
 
