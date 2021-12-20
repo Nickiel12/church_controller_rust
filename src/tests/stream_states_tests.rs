@@ -120,7 +120,7 @@ fn test_updating() {
     assert_eq!(stream_state.computer_sound_is_on, false);
 
     assert_eq!(stream_state.change_scene_on_change_slide_hotkey, true);
-    stream_state.update(StateUpdate::ChangeSceneOnChangeSlideHotkey(false));
+    stream_state.update(StateUpdate::ChangeSceneOnChangeSlide(false));
     assert_eq!(stream_state.change_scene_on_change_slide_hotkey, false);
 
     assert_eq!(stream_state.scene_is_augmented, false);

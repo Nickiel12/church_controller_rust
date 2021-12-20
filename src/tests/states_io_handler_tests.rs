@@ -35,7 +35,7 @@ fn send_on_multiple_threads() {
         tx1.send(StateMessage::StateUpdate(StateUpdate::TimerCanRun(false))).unwrap();
     });
     thread::spawn(move || {
-        tx2.send(StateMessage::StateUpdate(StateUpdate::ChangeSceneOnChangeSlideHotkey(false))).unwrap();
+        tx2.send(StateMessage::StateUpdate(StateUpdate::ChangeSceneOnChangeSlide(false))).unwrap();
     });
     thread::spawn(move || {
         tx3.send(StateMessage::StateUpdate(StateUpdate::StreamIsMuted(false))).unwrap();

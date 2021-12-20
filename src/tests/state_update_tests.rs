@@ -26,11 +26,11 @@ fn test_json_to_state_update() {
     
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
         "{\"type\": \"button\", \"button\": \"Change_With_Clicker\", \"data\": true}"
-        ).unwrap()), StateUpdate::ChangeSceneOnChangeSlideHotkey(true));
+        ).unwrap()), StateUpdate::ChangeSceneOnChangeSlide(true));
 
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
         "{\"type\": \"button\", \"button\": \"Change_With_Clicker\", \"data\": false}"
-        ).unwrap()), StateUpdate::ChangeSceneOnChangeSlideHotkey(false));
+        ).unwrap()), StateUpdate::ChangeSceneOnChangeSlide(false));
 
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
         "{\"type\": \"button\", \"button\": \"Toggle_Computer_Volume\", \"data\": true}"
