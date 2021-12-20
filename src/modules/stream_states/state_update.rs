@@ -71,69 +71,34 @@ impl StateUpdate {
     }
 
     pub fn to_json(&self) -> serde_json::Value {
-        match self {
+        let (update_type, data) = match self {
             StateUpdate::StreamRunning(is_true) => {
-                serde_json::json!({
-                "type": "button",
-                "button": "Stream_Running",
-                "data": is_true
-            })},
+                ("Stream_Running", is_true.to_string())},
             StateUpdate::StreamIsMuted(is_true) => {
-                serde_json::json!({
-                    "type": "button",
-                    "button": "Stream_Is_Muted",
-                    "data": is_true
-            })},
+                ("Stream_Is_Muted", is_true.to_string())},
             StateUpdate::ComputerSoundIsOn(is_true) => {
-                serde_json::json!({
-                    "type": "button",
-                    "button": "Computer_Sound_Is_On",
-                    "data": is_true,
-            })},
+                ("Computer_Sound_Is_On", is_true.to_string())},
             StateUpdate::ChangeSceneOnChangeSlide(is_true) => {
-                serde_json::json!({
-                    "type": "button",
-                    "button": "Change_With_Clicker",
-                    "data": is_true,
-            })},
+               ("Change_With_Clicker", is_true.to_string())},
             StateUpdate::SceneIsAugmented(is_true) => {
-                serde_json::json!({
-                    "type": "button",
-                    "type": "Scene_Is_Augmented",
-                    "data": is_true,
-            })},
+                ("Scene_Is_Augmented",  is_true.to_string())},
             StateUpdate::TimerCanRun(is_true) => {
-                serde_json::json!({
-                    "type": "button",
-                    "button": "Timer_Can_Run",
-                    "data": is_true,
-            })},
+                ("Timer_Can_Run", is_true.to_string())},
             StateUpdate::TimerLength(length) => {
-                serde_json::json!({
-                    "type": "button",
-                    "button": "Timer_Length",
-                    "data": length,
-            })},
+                ("Timer_Length", length.to_string())},
             StateUpdate::TimerText(text) => {
-                serde_json::json!({
-                    "type": "button",
-                    "button": "Timer_Text",
-                    "data": text,
-            })},
+                ("Timer_Text", text.clone())},
             StateUpdate::SubScene(scene) => {
-                serde_json::json!({
-                    "type": "button",
-                    "button": "SubScene",
-                    "SubScene": scene.to_string(),
-            })},
+                ("SubScene", scene.to_string())},
             StateUpdate::Scene(scene) => {
-                serde_json::json!({
-                    "type": "button",
-                    "button": "Scene",
-                    "Scene": scene.to_string(),
-            })},
+                ("Scene", scene.to_string())},
             StateUpdate::ComputerMediaDoPause(is_true) => todo!(),
             StateUpdate::UpdateClient => todo!(),
-        }
+        };
+    serde_json::json!({
+        "type": "button",
+        "button": update_type,
+        "data": data,
+    })
     }
 }
