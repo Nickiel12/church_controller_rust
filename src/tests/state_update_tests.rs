@@ -1,4 +1,4 @@
-use crate::modules::stream_states::{state_update::StateUpdate, enums::{Scenes, SubScenes}};
+use crate::modules::stream_states::{state_update::StateUpdate, enums::{Scenes, SubScenes, SlideChange}};
 
 
 
@@ -13,47 +13,47 @@ fn test_json_to_state_update() {
         ).unwrap()), StateUpdate::Scene(Scenes::Screen));
 
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
-            "{\"type\": \"update\", \"update\": \"Scene_Is_Augmented\", \"data\": true}"
+            "{\"type\": \"update\", \"update\": \"Scene_Is_Augmented\", \"data\": \"true\"}"
         ).unwrap()), StateUpdate::SceneIsAugmented(true));
 
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
-        "{\"type\": \"update\", \"update\": \"Auto_Change_To_Camera\", \"data\": true}"
+        "{\"type\": \"update\", \"update\": \"Timer_Can_Run\", \"data\": \"true\"}"
         ).unwrap()), StateUpdate::TimerCanRun(true));
 
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
-        "{\"type\": \"update\", \"update\": \"Auto_Change_To_Camera\", \"data\": false}"
+        "{\"type\": \"update\", \"update\": \"Timer_Can_Run\", \"data\": \"false\"}"
         ).unwrap()), StateUpdate::TimerCanRun(false));
     
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
-        "{\"type\": \"update\", \"update\": \"Change_With_Clicker\", \"data\": true}"
+        "{\"type\": \"update\", \"update\": \"Change_With_Clicker\", \"data\": \"true\"}"
         ).unwrap()), StateUpdate::ChangeSceneOnChangeSlide(true));
 
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
-        "{\"type\": \"update\", \"update\": \"Change_With_Clicker\", \"data\": false}"
+        "{\"type\": \"update\", \"update\": \"Change_With_Clicker\", \"data\": \"false\"}"
         ).unwrap()), StateUpdate::ChangeSceneOnChangeSlide(false));
 
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
-        "{\"type\": \"update\", \"update\": \"Toggle_Computer_Volume\", \"data\": true}"
+        "{\"type\": \"update\", \"update\": \"Toggle_Computer_Volume\", \"data\": \"true\"}"
         ).unwrap()), StateUpdate::ComputerSoundIsOn(true));
 
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
-        "{\"type\": \"update\", \"update\": \"Toggle_Computer_Volume\", \"data\": false}"
+        "{\"type\": \"update\", \"update\": \"Toggle_Computer_Volume\", \"data\": \"false\"}"
         ).unwrap()), StateUpdate::ComputerSoundIsOn(false));
     
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
-        "{\"type\": \"update\", \"update\": \"Toggle_Stream_Volume\", \"data\": true}"
+        "{\"type\": \"update\", \"update\": \"Toggle_Stream_Volume\", \"data\": \"true\"}"
         ).unwrap()), StateUpdate::StreamIsMuted(true));
 
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
-        "{\"type\": \"update\", \"update\": \"Toggle_Stream_Volume\", \"data\": false}"
+        "{\"type\": \"update\", \"update\": \"Toggle_Stream_Volume\", \"data\": \"false\"}"
         ).unwrap()), StateUpdate::StreamIsMuted(false));
 
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
-        "{\"type\": \"update\", \"update\": \"Media_Pause_Play\", \"data\": true}"
+        "{\"type\": \"update\", \"update\": \"Media_Pause_Play\", \"data\": \"true\"}"
         ).unwrap()), StateUpdate::ComputerMediaDoPause(true));
 
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
-        "{\"type\": \"update\", \"update\": \"Media_Pause_Play\", \"data\": false}"
+        "{\"type\": \"update\", \"update\": \"Media_Pause_Play\", \"data\": \"false\"}"
         ).unwrap()), StateUpdate::ComputerMediaDoPause(false));
 
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
@@ -85,12 +85,20 @@ fn test_json_to_state_update() {
         ).unwrap()), StateUpdate::SubScene(SubScenes::ScreenWithLowerRight));
     
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
-        "{\"type\": \"update\", \"update\": \"Timer_Length\" \"data\": 5.5}"
-    ).unwrap()), StateUpdate::TimerLength(5.5));
+        "{\"type\": \"update\", \"update\": \"Timer_Length\", \"data\": 5.5}"
+        ).unwrap()), StateUpdate::TimerLength(5.5));
+
+    assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
+        "{\"type\": \"update\", \"update\": \"Next_Slide\"}"
+        ).unwrap()), StateUpdate::ChangeSlide(SlideChange::Next));
+
+    assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
+        "{\"type\": \"update\", \"update\": \"Prev_Slide\"}"
+        ).unwrap()), StateUpdate::ChangeSlide(SlideChange::Previous));
 
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
         "{\"type\": \"update\", \"update\":\"all\"}"
-    ).unwrap()), StateUpdate::UpdateClient);
+        ).unwrap()), StateUpdate::UpdateClient);
 }
 
 #[test]
@@ -103,6 +111,7 @@ fn test_json_to_state_update_fails() {
 
 #[test]
 fn test_state_update_to_json() {
+    println!("{:?}", StateUpdate::StreamRunning(true).to_json());
     //Note, this one needs to is dependant on test_json_to_update for correctedness
     assert_eq!(StateUpdate::StreamRunning(true), (StateUpdate::json_to_state_update(StateUpdate::StreamRunning(true).to_json())));
 }

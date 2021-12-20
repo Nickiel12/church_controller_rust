@@ -1,6 +1,6 @@
 use std::ops::Add;
 
-use super::enums::{SubScenes, Scenes};
+use super::enums::{SubScenes, Scenes, SlideChange};
 use serde_json::Value;
 
 
@@ -17,6 +17,7 @@ pub enum StateUpdate {
     TimerText(String),
     SubScene(SubScenes),
     Scene(Scenes),
+    ChangeSlide(SlideChange),
     UpdateClient,
 }
 
@@ -34,10 +35,11 @@ impl StateUpdate {
                         match scene {
                             "Scene_Camera" => {StateUpdate::Scene(Scenes::Camera)}
                             "Scene_Screen" => {StateUpdate::Scene(Scenes::Screen)}
-                            "Scene_Is_Augmented"    => {StateUpdate::SceneIsAugmented(incoming_json["data"].as_bool().unwrap())},
                             _ => {panic!("unknown Scene! {}", scene)}                            
                         }
                     }
+
+                    "Scene_Is_Augmented" => {StateUpdate::SceneIsAugmented(string_to_bool(incoming_json["data"].as_str().unwrap()))},
 
                     //SubScenes
                     "SubScene" => {
@@ -55,24 +57,25 @@ impl StateUpdate {
                     }
                     
                     //Slide changing behavior
-                    "Timer_Can_Run" => {StateUpdate::TimerCanRun(incoming_json["data"].as_bool().unwrap())}
-                    "Change_With_Clicker" => {StateUpdate::ChangeSceneOnChangeSlide(incoming_json["data"].as_bool().unwrap())},
+                    "Timer_Can_Run" => {StateUpdate::TimerCanRun(string_to_bool(incoming_json["data"].as_str().unwrap()))}
+                    "Change_With_Clicker" => {StateUpdate::ChangeSceneOnChangeSlide(string_to_bool(incoming_json["data"].as_str().unwrap()))},
                     "Timer_Length" => {
                         let new_timer_length = &incoming_json["data"];
                         StateUpdate::TimerLength(new_timer_length.as_f64().unwrap() as f32)
                     },
 
                     //Extra Toggles
-                    "Toggle_Computer_Volume" => {StateUpdate::ComputerSoundIsOn(incoming_json["data"].as_bool().unwrap())},
-                    "Toggle_Stream_Volume" => {StateUpdate::StreamIsMuted(incoming_json["data"].as_bool().unwrap())},
-                    "Media_Pause_Play" => {StateUpdate::ComputerMediaDoPause(incoming_json["data"].as_bool().unwrap())},
+                    "Toggle_Computer_Volume" => {StateUpdate::ComputerSoundIsOn(string_to_bool(incoming_json["data"].as_str().unwrap()))},
+                    "Toggle_Stream_Volume" => {StateUpdate::StreamIsMuted(string_to_bool(incoming_json["data"].as_str().unwrap()))},
+                    "Media_Pause_Play" => {StateUpdate::ComputerMediaDoPause(string_to_bool(incoming_json["data"].as_str().unwrap()))},
                     
-
                     "all" => {StateUpdate::UpdateClient},
+                    
+                    "Stream_Running" => {StateUpdate::StreamRunning(string_to_bool(incoming_json["data"].as_str().unwrap()))}
 
+                    "Next_Slide" => {StateUpdate::ChangeSlide(SlideChange::Next)},
+                    "Prev_Slide" => {StateUpdate::ChangeSlide(SlideChange::Previous)}
                     //Unimplemented
-                    "Next_Slide" |
-                    "Prev_Slide" |
                     _ => {panic!("trying to use a button type I don't know!: {}", value)}
                 }
             },
@@ -104,7 +107,9 @@ impl StateUpdate {
                 ("SubScene", scene.to_string())},
             StateUpdate::Scene(scene) => {
                 ("Scene", scene.to_string())},
-            StateUpdate::ComputerMediaDoPause(is_true) => todo!(),
+            StateUpdate::ComputerMediaDoPause(is_true) => {
+                ("Toggle_Computer_Volume", is_true.to_string())},
+            StateUpdate::ChangeSlide(value) => todo!(),
             StateUpdate::UpdateClient => todo!(),
         };
     serde_json::json!({
@@ -112,5 +117,15 @@ impl StateUpdate {
         "update": update_type,
         "data": data,
         })
+    }
+}
+
+fn string_to_bool(input: &str) -> bool{
+    if input == "true" {
+        true
+    } else if input == "false" {
+        false
+    } else {
+        panic!("string to bool doesn't recognize the input: {}", input);
     }
 }
