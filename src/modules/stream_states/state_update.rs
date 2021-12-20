@@ -25,8 +25,8 @@ impl StateUpdate {
         let message_type = &incoming_json["type"];
 
         match message_type.as_str().unwrap() {
-            "button" => {
-                let value = &incoming_json["button"];
+            "update" => {
+                let value = &incoming_json["update"];
                 match value.as_str().unwrap() {
                     //Master Scenes
                     "Scene_Camera" => {StateUpdate::Scene(Scenes::Camera)}
@@ -96,8 +96,8 @@ impl StateUpdate {
             StateUpdate::UpdateClient => todo!(),
         };
     serde_json::json!({
-        "type": "button",
-        "button": update_type,
+        "type": "update",
+        "update": update_type,
         "data": data,
     })
     }
