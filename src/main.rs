@@ -13,7 +13,7 @@ mod modules;
 const SERVER_ADDRESS: &str = "10.0.0.168:5000";
 
 fn main() {
-    let state = StreamState::new();
+    let mut state = StreamState::new();
 
     let socket_listener = Socket::make_listener(SERVER_ADDRESS);
     let (from_socket_tx, from_socket_rx) = mpsc::channel::<String>();
@@ -31,6 +31,7 @@ fn main() {
                 println!("{}", message);
                 let json = serde_json::from_str(&message[1..]).unwrap();
                 let update = StateUpdate::json_to_state_update(json);
+                state.handle_update(update);
             },
             Err(_) => {continue},
         }
