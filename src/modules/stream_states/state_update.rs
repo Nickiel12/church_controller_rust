@@ -29,9 +29,30 @@ impl StateUpdate {
                 let value = &incoming_json["update"];
                 match value.as_str().unwrap() {
                     //Master Scenes
-                    "Scene_Camera" => {StateUpdate::Scene(Scenes::Camera)}
-                    "Scene_Screen" => {StateUpdate::Scene(Scenes::Screen)}
-                    "Scene_Is_Augmented"    => {StateUpdate::SceneIsAugmented(incoming_json["data"].as_bool().unwrap())},
+                    "Scene" => {
+                        let scene = incoming_json["data"].as_str().unwrap();
+                        match scene {
+                            "Scene_Camera" => {StateUpdate::Scene(Scenes::Camera)}
+                            "Scene_Screen" => {StateUpdate::Scene(Scenes::Screen)}
+                            "Scene_Is_Augmented"    => {StateUpdate::SceneIsAugmented(incoming_json["data"].as_bool().unwrap())},
+                            _ => {panic!("unknown Scene! {}", scene)}                            
+                        }
+                    }
+
+                    //SubScenes
+                    "SubScene" => {
+                        let subscene = incoming_json["data"].as_str().unwrap();
+                        match subscene {
+                            "Camera_None" => {StateUpdate::SubScene(SubScenes::CameraDefault)},
+                            "Camera_Top_Right" => {StateUpdate::SubScene(SubScenes::CameraWithUpperRight)},
+                            "Camera_Bottom_Right" => {StateUpdate::SubScene(SubScenes::CameraWithLowerRight)},
+                            "Camera_Bottom_Left" => {StateUpdate::SubScene(SubScenes::CameraWithLargeUpperRight)},
+                            "Screen_None" => {StateUpdate::SubScene(SubScenes::ScreenDefault)},
+                            "Screen_Top_Right" => {StateUpdate::SubScene(SubScenes::ScreenWithUpperRight)},
+                            "Screen_Bottom_Right" => {StateUpdate::SubScene(SubScenes::ScreenWithLowerRight)},
+                            _ => {panic!("unkown SubScene! {}", subscene)}
+                        }
+                    }
                     
                     //Slide changing behavior
                     "Timer_Can_Run" => {StateUpdate::TimerCanRun(incoming_json["data"].as_bool().unwrap())}
@@ -45,16 +66,8 @@ impl StateUpdate {
                     "Toggle_Computer_Volume" => {StateUpdate::ComputerSoundIsOn(incoming_json["data"].as_bool().unwrap())},
                     "Toggle_Stream_Volume" => {StateUpdate::StreamIsMuted(incoming_json["data"].as_bool().unwrap())},
                     "Media_Pause_Play" => {StateUpdate::ComputerMediaDoPause(incoming_json["data"].as_bool().unwrap())},
-
-                    //SubScenes
-                    "Camera_None" => {StateUpdate::SubScene(SubScenes::CameraDefault)},
-                    "Camera_Top_Right" => {StateUpdate::SubScene(SubScenes::CameraWithUpperRight)},
-                    "Camera_Bottom_Right" => {StateUpdate::SubScene(SubScenes::CameraWithLowerRight)},
-                    "Camera_Bottom_Left" => {StateUpdate::SubScene(SubScenes::CameraWithLargeUpperRight)},
-                    "Screen_None" => {StateUpdate::SubScene(SubScenes::ScreenDefault)},
-                    "Screen_Top_Right" => {StateUpdate::SubScene(SubScenes::ScreenWithUpperRight)},
-                    "Screen_Bottom_Right" => {StateUpdate::SubScene(SubScenes::ScreenWithLowerRight)},
                     
+
                     "all" => {StateUpdate::UpdateClient},
 
                     //Unimplemented
@@ -98,6 +111,6 @@ impl StateUpdate {
         "type": "update",
         "update": update_type,
         "data": data,
-    })
+        })
     }
 }
