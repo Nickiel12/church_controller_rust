@@ -12,7 +12,7 @@ fn test_make_socket() {
 
     let tx = io_handler.message_thread_tx.clone().unwrap();
     tx.send(StateMessage::StateUpdate(StateUpdate::SceneIsAugmented(true))).unwrap();
-    tx.send(StateMessage::StateUpdate(StateUpdate::StreamIsMuted(true))).unwrap();
+    tx.send(StateMessage::StateUpdate(StateUpdate::StreamSoundToggleOn(true))).unwrap();
     thread::sleep(std::time::Duration::from_millis(1000));
 
     let final_state = io_handler.close();
@@ -38,8 +38,8 @@ fn send_on_multiple_threads() {
         tx2.send(StateMessage::StateUpdate(StateUpdate::ChangeSceneOnChangeSlide(false))).unwrap();
     });
     thread::spawn(move || {
-        tx3.send(StateMessage::StateUpdate(StateUpdate::StreamIsMuted(false))).unwrap();
-        tx3.send(StateMessage::StateUpdate(StateUpdate::StreamIsMuted(true))).unwrap();
+        tx3.send(StateMessage::StateUpdate(StateUpdate::StreamSoundToggleOn(false))).unwrap();
+        tx3.send(StateMessage::StateUpdate(StateUpdate::StreamSoundToggleOn(true))).unwrap();
     });
 
     thread::sleep(std::time::Duration::from_millis(1000));

@@ -48,8 +48,8 @@ impl StreamState {
     pub fn update(&mut self, update: StateUpdate) {
         match update {
             StateUpdate::StreamRunning(new_val)     => {self.stream_running  = new_val;},
-            StateUpdate::StreamIsMuted(new_val)     => {self.stream_is_muted = new_val;},
-            StateUpdate::ComputerSoundIsOn(new_val) => {self.computer_sound_is_on = new_val;},
+            StateUpdate::StreamSoundToggleOn(new_val)     => {self.stream_is_muted = new_val;},
+            StateUpdate::ToggleComputerSoundOn(new_val) => {self.computer_sound_is_on = new_val;},
             StateUpdate::ChangeSceneOnChangeSlide(new_val) => {self.change_scene_on_change_slide_hotkey = new_val;},
             StateUpdate::TimerCanRun(new_val)  => {self.timer_can_run = new_val;},
             StateUpdate::TimerLength(new_val)   => {self.timer_length  = new_val;},

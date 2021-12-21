@@ -6,7 +6,7 @@ use crate::modules::{message_handler::{MessageHandler, StateMessage}, stream_sta
 #[test]
 fn does_stream_state_implement_message_handler() {
     let mut state = StreamState::new();
-    state.handle_update(StateUpdate::ComputerSoundIsOn(false));
+    state.handle_update(StateUpdate::ToggleComputerSoundOn(false));
     assert_eq!(state.computer_sound_is_on, false);
 }
 
@@ -30,7 +30,7 @@ fn message_hander_can_handle_basic_message() {
     let handler = StreamState::new();
     
     let join_handle = listen(handler, rx);
-    tx.send(StateMessage::StateUpdate(StateUpdate::ComputerSoundIsOn(false))).unwrap();
+    tx.send(StateMessage::StateUpdate(StateUpdate::ToggleComputerSoundOn(false))).unwrap();
     thread::sleep(std::time::Duration::from_millis(1000));
     tx.send(StateMessage::CloseListener).unwrap();
     join_handle.join().unwrap();
@@ -62,7 +62,7 @@ fn message_handler_can_handle_multiple_messages() {
     let handler = StreamState::new();
     
     let join_handle = listen(handler, rx);
-    tx.send(StateMessage::StateUpdate(StateUpdate::ComputerSoundIsOn(false))).unwrap();
+    tx.send(StateMessage::StateUpdate(StateUpdate::ToggleComputerSoundOn(false))).unwrap();
     tx.send(StateMessage::StateUpdate(StateUpdate::SceneIsAugmented(true))).unwrap();
     tx.send(StateMessage::StateUpdate(StateUpdate::TimerCanRun(false))).unwrap();
     thread::sleep(std::time::Duration::from_millis(1000));
