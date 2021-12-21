@@ -112,11 +112,11 @@ fn test_updating() {
     assert_eq!(stream_state.stream_running, true);
 
     assert_eq!(stream_state.stream_is_muted, false);
-    stream_state.update(StateUpdate::StreamIsMuted(true));
+    stream_state.update(StateUpdate::StreamSoundToggleOn(true));
     assert_eq!(stream_state.stream_is_muted, true);
 
     assert_eq!(stream_state.computer_sound_is_on, true);
-    stream_state.update(StateUpdate::ComputerSoundIsOn(false));
+    stream_state.update(StateUpdate::ToggleComputerSoundOn(false));
     assert_eq!(stream_state.computer_sound_is_on, false);
 
     assert_eq!(stream_state.change_scene_on_change_slide_hotkey, true);

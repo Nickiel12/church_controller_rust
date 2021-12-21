@@ -7,8 +7,8 @@ use serde_json::Value;
 #[derive(Debug, PartialEq, Clone)]
 pub enum StateUpdate {
     StreamRunning(bool),
-    StreamIsMuted(bool),
-    ComputerSoundIsOn(bool),
+    StreamSoundToggleOn(bool),
+    ToggleComputerSoundOn(bool),
     ComputerMediaDoPause(bool),
     ChangeSceneOnChangeSlide(bool),
     SceneIsAugmented(bool),
@@ -52,7 +52,7 @@ impl StateUpdate {
                             "Screen_None" => {StateUpdate::SubScene(SubScenes::ScreenDefault)},
                             "Screen_Top_Right" => {StateUpdate::SubScene(SubScenes::ScreenWithUpperRight)},
                             "Screen_Bottom_Right" => {StateUpdate::SubScene(SubScenes::ScreenWithLowerRight)},
-                            _ => {panic!("unkown SubScene! {}", subscene)}
+                            _ => {panic!("unknown SubScene! {}", subscene)}
                         }
                     }
                     
@@ -61,14 +61,15 @@ impl StateUpdate {
                     "Change_With_Clicker" => {StateUpdate::ChangeSceneOnChangeSlide(string_to_bool(incoming_json["data"].as_str().unwrap()))},
                     "Timer_Length" => {
                         let new_timer_length = &incoming_json["data"];
-                        StateUpdate::TimerLength(new_timer_length.as_f64().unwrap() as f32)
+                        StateUpdate::TimerLength(new_timer_length.as_str().unwrap().parse::<f32>().unwrap())
                     },
 
                     //Extra Toggles
-                    "Toggle_Computer_Volume" => {StateUpdate::ComputerSoundIsOn(string_to_bool(incoming_json["data"].as_str().unwrap()))},
-                    "Toggle_Stream_Volume" => {StateUpdate::StreamIsMuted(string_to_bool(incoming_json["data"].as_str().unwrap()))},
+                    "Toggle_Computer_Volume" => {StateUpdate::ToggleComputerSoundOn(string_to_bool(incoming_json["data"].as_str().unwrap()))},
+                    "Toggle_Stream_Volume" => {StateUpdate::StreamSoundToggleOn(string_to_bool(incoming_json["data"].as_str().unwrap()))},
                     "Media_Pause_Play" => {StateUpdate::ComputerMediaDoPause(string_to_bool(incoming_json["data"].as_str().unwrap()))},
-                    
+                    "Timer_Text" => {StateUpdate::TimerText(incoming_json["data"].as_str().unwrap().to_string())}
+
                     "all" => {StateUpdate::UpdateClient},
                     
                     "Stream_Running" => {StateUpdate::StreamRunning(string_to_bool(incoming_json["data"].as_str().unwrap()))}
@@ -89,10 +90,10 @@ impl StateUpdate {
         let (update_type, data) = match self {
             StateUpdate::StreamRunning(is_true) => {
                 ("Stream_Running", is_true.to_string())},
-            StateUpdate::StreamIsMuted(is_true) => {
-                ("Stream_Is_Muted", is_true.to_string())},
-            StateUpdate::ComputerSoundIsOn(is_true) => {
-                ("Computer_Sound_Is_On", is_true.to_string())},
+            StateUpdate::StreamSoundToggleOn(is_true) => {
+                ("Toggle_Stream_Volume", is_true.to_string())},
+            StateUpdate::ToggleComputerSoundOn(is_true) => {
+                ("Toggle_Computer_Volume", is_true.to_string())},
             StateUpdate::ChangeSceneOnChangeSlide(is_true) => {
                ("Change_With_Clicker", is_true.to_string())},
             StateUpdate::SceneIsAugmented(is_true) => {
@@ -109,8 +110,15 @@ impl StateUpdate {
                 ("Scene", scene.to_string())},
             StateUpdate::ComputerMediaDoPause(is_true) => {
                 ("Toggle_Computer_Volume", is_true.to_string())},
-            StateUpdate::ChangeSlide(value) => todo!(),
-            StateUpdate::UpdateClient => todo!(),
+            StateUpdate::ChangeSlide(value) => {
+                match value {
+                    SlideChange::Next => {("Next_Slide", "".to_string())},
+                    SlideChange::Previous => {("Prev_Slide", "".to_string())},
+                }
+            },
+            StateUpdate::UpdateClient => {
+                ("all", "".to_string())
+            },
         };
     serde_json::json!({
         "type": "update",
