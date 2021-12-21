@@ -17,11 +17,11 @@ pub enum SubScenes {
 impl SubScenes {
     pub fn to_string(&self) -> String {
         match self {
-            SubScenes::CameraDefault        => {String::from_str("Camera_Default").unwrap()},
+            SubScenes::CameraDefault        => {String::from_str("Camera_None").unwrap()},
             SubScenes::CameraWithUpperRight => {String::from_str("Camera_Top_Right").unwrap()},
             SubScenes::CameraWithLargeUpperRight => {String::from_str("Camera_Bottom_Left").unwrap()},
             SubScenes::CameraWithLowerRight => {String::from_str("Camera_Bottom_Right").unwrap()},
-            SubScenes::ScreenDefault        => {String::from_str("Screen_Default").unwrap()},
+            SubScenes::ScreenDefault        => {String::from_str("Screen_None").unwrap()},
             SubScenes::ScreenWithUpperRight => {String::from_str("Screen_Top_Right").unwrap()},
             SubScenes::ScreenWithLowerRight => {String::from_str("Screen_Bottom_Right").unwrap()},
         }
