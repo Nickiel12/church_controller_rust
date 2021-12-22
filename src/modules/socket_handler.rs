@@ -1,7 +1,7 @@
 use workctl::sync_flag;
 use std::net::{TcpListener, TcpStream, Shutdown};
 use std::io::{Read, Write};
-use std::sync::mpsc::Sender;
+use crossbeam_channel::Sender;
 use std::thread::{self, JoinHandle};
 use std::time::Duration;
 

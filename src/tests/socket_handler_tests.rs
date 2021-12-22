@@ -1,4 +1,5 @@
 use std::sync::mpsc;
+use crossbeam_channel::unbounded;
 use std::io::{Write};
 use std::thread;
 use std::time::Duration;
@@ -31,7 +32,7 @@ fn panic_no_listener() {
 #[test]
 fn can_handle_messages() {
     let listener = Socket::make_listener("localhost:5004");
-    let (tx_1, rx_1) = mpsc::channel::<String>();
+    let (tx_1, rx_1) = unbounded::<String>();
 
     let (mut flag, connection_handle) = Socket::handle_connections(listener, tx_1);
 
@@ -52,7 +53,7 @@ fn can_handle_messages() {
 #[test]
 fn can_handle_delayed_messages() {
     let listener = Socket::make_listener("localhost:5005");
-    let (tx_1, rx_1) = mpsc::channel::<String>();
+    let (tx_1, rx_1) = unbounded::<String>();
 
     let (mut flag, connection_handle) = Socket::handle_connections(listener, tx_1);
 

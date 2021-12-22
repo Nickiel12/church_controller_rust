@@ -1,4 +1,5 @@
 use std::{sync::mpsc, time::Duration};
+use crossbeam_channel::unbounded;
 
 use modules::{socket_handler::Socket, stream_states::stream_states_class::StreamState, message_handler::{MessageHandler, StateMessage}};
 use workctl::sync_flag;
@@ -16,7 +17,7 @@ fn main() {
     let mut state = StreamState::new();
 
     let socket_listener = Socket::make_listener(SERVER_ADDRESS);
-    let (from_socket_tx, from_socket_rx) = mpsc::channel::<String>();
+    let (from_socket_tx, from_socket_rx) = unbounded::<String>();
     let (mut listener_can_run_flag, listener_join_handle) = Socket::handle_connections(socket_listener, from_socket_tx);
     
     let (control_c_flag_tx, control_c_called_flag_rx) = sync_flag::new_syncflag(false);
