@@ -1,4 +1,4 @@
-use std::{sync::mpsc, time::Duration};
+use std::{time::Duration};
 use crossbeam_channel::unbounded;
 
 use modules::{socket_handler::Socket, stream_states::stream_states_class::StreamState, message_handler::{MessageHandler, StateMessage}};
@@ -18,12 +18,14 @@ fn main() {
 
     let socket_listener = Socket::make_listener(SERVER_ADDRESS);
     let (from_socket_tx, from_socket_rx) = unbounded::<String>();
-    let (mut listener_can_run_flag, listener_join_handle) = Socket::handle_connections(socket_listener, from_socket_tx);
+    let (to_socket_tx, to_socket_rx) = unbounded::<String>();
+    let (mut listener_can_run_flag, listener_join_handle) = Socket::handle_connections(socket_listener, from_socket_tx, to_socket_rx);
     
     let (control_c_flag_tx, control_c_called_flag_rx) = sync_flag::new_syncflag(false);
     
     setup_control_c(control_c_flag_tx);
-    
+    let _outgoing = std::net::TcpStream::connect(SERVER_ADDRESS).unwrap();
+    to_socket_tx.send("this is a message".to_string()).unwrap();
     //until control_c is caught, check the queue of incoming
     //requests from the socket handler.
     while !control_c_called_flag_rx.get() {
