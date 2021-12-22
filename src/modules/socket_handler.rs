@@ -6,7 +6,9 @@ use std::thread::{self, JoinHandle};
 use std::time::Duration;
 
 pub struct Socket{
-
+    socket_txs: Vec<Sender<String>>,
+    stop_listener_flag: sync_flag::SyncFlagTx,
+    handle_connections_join_handle: Option<JoinHandle<()>>,
 }
 
 impl Socket {
@@ -15,7 +17,7 @@ impl Socket {
         TcpListener::bind(address).unwrap()
     }
 
-    pub fn handle_connections(listener: TcpListener, messenger_tx: Sender<String>, messenger_rx: Receiver<String>) -> (sync_flag::SyncFlagTx, JoinHandle<()>){
+    pub fn handle_connections(listener: TcpListener, messenger_tx: Sender<String>, messenger_rx: Receiver<String>) -> Self {
         let (tx, thread_stop_flag) = sync_flag::new_syncflag(true);
         
         let handle = thread::spawn(move || {
@@ -28,7 +30,11 @@ impl Socket {
             }
             drop(listener);
         });
-        (tx, handle)
+        Socket {
+            socket_txs: Vec::<Sender<String>>::new(),
+            stop_listener_flag: tx,
+            handle_connections_join_handle: Some(handle),
+        }
     }
 
     pub fn handle_client(mut stream: TcpStream, update_tx: Sender<String>, message_rx: Receiver<String>, program_shutdown_flag: sync_flag::SyncFlagRx) {
@@ -57,5 +63,12 @@ impl Socket {
             }
         }
         stream.shutdown(Shutdown::Both).unwrap();
+    }
+
+    pub fn close(&mut self) {
+        self.stop_listener_flag.set(false);
+        self.handle_connections_join_handle
+            .take().expect("Called on not running thread")
+            .join().expect("Could not join thread");
     }
 }

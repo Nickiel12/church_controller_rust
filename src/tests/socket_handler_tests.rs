@@ -1,4 +1,3 @@
-use std::sync::mpsc;
 use crossbeam_channel::unbounded;
 use std::io::{Write, Read};
 use std::thread;
@@ -35,7 +34,7 @@ fn can_handle_messages() {
     let (tx_1, rx_1) = unbounded::<String>();
     let (_stream_tx, stream_rx) = unbounded::<String>();
 
-    let (mut flag, connection_handle) = Socket::handle_connections(listener, tx_1, stream_rx);
+    let mut socket = Socket::handle_connections(listener, tx_1, stream_rx);
 
     let join_handle = std::thread::spawn(move || {
         let mut outgoing = std::net::TcpStream::connect("localhost:5004").unwrap();
@@ -45,10 +44,10 @@ fn can_handle_messages() {
     join_handle.join().unwrap();
     thread::sleep(Duration::from_millis(1000));
 
-    flag.set(false);
-    connection_handle.join().unwrap();
     let message = rx_1.recv().unwrap();
     assert_eq!(message, String::from("this is a test"));
+    
+    socket.close();
 }
 
 #[test]
@@ -57,7 +56,7 @@ fn can_handle_delayed_messages() {
     let (tx_1, rx_1) = unbounded::<String>();
     let (_stream_tx, stream_rx) = unbounded::<String>();
 
-    let (mut flag, connection_handle) = Socket::handle_connections(listener, tx_1, stream_rx);
+    let mut socket = Socket::handle_connections(listener, tx_1, stream_rx);
 
     let mut outgoing = std::net::TcpStream::connect("localhost:5005").unwrap();
     outgoing.write("this is a test1\n".as_bytes()).unwrap();
@@ -74,8 +73,7 @@ fn can_handle_delayed_messages() {
     println!("{}", message);
     assert_eq!(message, String::from("this is a test3\n"));
     
-    flag.set(false);
-    connection_handle.join().unwrap();
+    socket.close();
 }
 
 #[test]
@@ -84,7 +82,7 @@ fn can_send_and_receive_on_stream() {
     let (tx_1, rx_1) = unbounded::<String>();
     let (stream_tx, stream_rx) = unbounded::<String>();
 
-    let (mut close_socket_flag, connection_handle) = Socket::handle_connections(listener, tx_1, stream_rx);
+    let mut socket = Socket::handle_connections(listener, tx_1, stream_rx);
 
     let mut outgoing = std::net::TcpStream::connect("localhost:5006").unwrap();
     outgoing.set_read_timeout(Some(Duration::from_millis(1000))).expect("couln't set timout");
@@ -105,6 +103,5 @@ fn can_send_and_receive_on_stream() {
     assert_eq!("this is another test!", message.into_owned());
 
     drop(outgoing);
-    close_socket_flag.set(false);
-    connection_handle.join().unwrap();
+    socket.close();
 }

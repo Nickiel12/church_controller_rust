@@ -1,7 +1,7 @@
 use std::{time::Duration};
 use crossbeam_channel::unbounded;
 
-use modules::{socket_handler::Socket, stream_states::stream_states_class::StreamState, message_handler::{MessageHandler, StateMessage}};
+use modules::{socket_handler::Socket, stream_states::stream_states_class::StreamState, message_handler::{MessageHandler}};
 use workctl::sync_flag;
 
 use crate::modules::stream_states::state_update::StateUpdate;
@@ -19,7 +19,7 @@ fn main() {
     let socket_listener = Socket::make_listener(SERVER_ADDRESS);
     let (from_socket_tx, from_socket_rx) = unbounded::<String>();
     let (to_socket_tx, to_socket_rx) = unbounded::<String>();
-    let (mut listener_can_run_flag, listener_join_handle) = Socket::handle_connections(socket_listener, from_socket_tx, to_socket_rx);
+    let mut socket = Socket::handle_connections(socket_listener, from_socket_tx, to_socket_rx);
     
     let (control_c_flag_tx, control_c_called_flag_rx) = sync_flag::new_syncflag(false);
     
@@ -40,9 +40,7 @@ fn main() {
         }
     }
     
-    //Close the listener thread
-    listener_can_run_flag.set(false);
-    listener_join_handle.join().unwrap();
+    socket.close();
 }
 
 fn setup_control_c(mut control_c_flag_tx: sync_flag::SyncFlagTx) {
