@@ -2,7 +2,6 @@ use super::stream_states::{state_update::StateUpdate, stream_states_class::Strea
 
 pub enum StateMessage {
     StateUpdate(StateUpdate),
-    GetStates,
     CloseListener,
 }
 

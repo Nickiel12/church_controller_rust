@@ -19,7 +19,6 @@ fn message_hander_can_handle_basic_message() {
             for message in rx {
                 match message {
                     StateMessage::StateUpdate(update) => {handler.handle_update(update)},
-                    StateMessage::GetStates => {panic!("Why is getstates being called in this test?");},
                     StateMessage::CloseListener => {break;},
                 };
             }
@@ -46,7 +45,6 @@ fn message_handler_can_handle_multiple_messages() {
             for message in rx {
                 match message {
                     StateMessage::StateUpdate(update) => {handler.handle_update(update)},
-                    StateMessage::GetStates => {panic!("Why is getstates being called in this test?");},
                     StateMessage::CloseListener => {break;},
                 };
             }
