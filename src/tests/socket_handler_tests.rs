@@ -32,9 +32,8 @@ fn panic_no_listener() {
 fn can_handle_messages() {
     let listener = Socket::make_listener("localhost:5004");
     let (tx_1, rx_1) = unbounded::<String>();
-    let (_stream_tx, stream_rx) = unbounded::<String>();
 
-    let mut socket = Socket::handle_connections(listener, tx_1, stream_rx);
+    let mut socket = Socket::handle_connections(listener, tx_1);
 
     let join_handle = std::thread::spawn(move || {
         let mut outgoing = std::net::TcpStream::connect("localhost:5004").unwrap();
@@ -54,9 +53,8 @@ fn can_handle_messages() {
 fn can_handle_delayed_messages() {
     let listener = Socket::make_listener("localhost:5005");
     let (tx_1, rx_1) = unbounded::<String>();
-    let (_stream_tx, stream_rx) = unbounded::<String>();
 
-    let mut socket = Socket::handle_connections(listener, tx_1, stream_rx);
+    let mut socket = Socket::handle_connections(listener, tx_1);
 
     let mut outgoing = std::net::TcpStream::connect("localhost:5005").unwrap();
     outgoing.write("this is a test1\n".as_bytes()).unwrap();
@@ -80,9 +78,8 @@ fn can_handle_delayed_messages() {
 fn can_send_and_receive_on_stream() {
     let listener = Socket::make_listener("localhost:5006");
     let (tx_1, rx_1) = unbounded::<String>();
-    let (stream_tx, stream_rx) = unbounded::<String>();
 
-    let mut socket = Socket::handle_connections(listener, tx_1, stream_rx);
+    let mut socket = Socket::handle_connections(listener, tx_1);
 
     let mut outgoing = std::net::TcpStream::connect("localhost:5006").unwrap();
     outgoing.set_read_timeout(Some(Duration::from_millis(1000))).expect("couln't set timout");
@@ -92,7 +89,7 @@ fn can_send_and_receive_on_stream() {
     thread::sleep(Duration::from_millis(250));
     assert_eq!(rx_1.try_recv().unwrap(), "such a test!\n");
 
-    stream_tx.send("this is another test!".to_string()).unwrap();
+    socket.send("this is another test!".to_string());
     thread::sleep(Duration::from_millis(250));
 
     let mut buffer = [0; 256];
