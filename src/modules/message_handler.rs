@@ -1,10 +1,5 @@
 use super::stream_states::{state_update::StateUpdate, stream_states_class::StreamState};
 
-pub enum StateMessage {
-    StateUpdate(StateUpdate),
-    CloseListener,
-}
-
 pub trait MessageHandler {
     fn handle_update(&mut self, update: StateUpdate) -> ();
     fn get_states(&self) -> StreamState;
