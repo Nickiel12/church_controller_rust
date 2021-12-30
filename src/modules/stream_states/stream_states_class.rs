@@ -1,3 +1,5 @@
+use std::time::SystemTime;
+
 use super::enums::{SubScenes, Scenes};
 use super::state_update::StateUpdate;
 
@@ -13,6 +15,8 @@ pub struct StreamState {
     pub timer_can_run: bool,
     pub timer_length: f32,
     pub timer_text: String,
+    pub timer_start: SystemTime,
+    pub timer_finished: bool,
 
     pub current_scene: Scenes,
     pub camera_sub_scene: SubScenes,
@@ -32,6 +36,8 @@ impl Default for StreamState {
             timer_can_run: true,
             timer_length: 15.0,
             timer_text: String::from("0.0"),
+            timer_start: SystemTime::now(),
+            timer_finished: true,
             
             current_scene: Scenes::Camera,
             camera_sub_scene: SubScenes::CameraDefault,
