@@ -1,4 +1,4 @@
-use std::time::{SystemTime, Duration};
+use std::time::{SystemTime};
 
 use super::{stream_states::{state_update::StateUpdate, stream_states_class::StreamState, enums::{SlideChange, Scenes}}, external_interface};
 
@@ -81,7 +81,7 @@ impl MessageHandler for StreamState {
             StateUpdate::ComputerMediaDoPause(value) => {external_interface::toggle_media_play_pause(value); return (Some(update), None)},
             StateUpdate::UpdateClient => {},
             StateUpdate::StreamRunning(_) => {},
-            _ => {}
+            //_ => {}
         }
         (None, None)
     }
@@ -119,7 +119,7 @@ fn test_tick_1() {
     let mut state = StreamState::new();
     state.timer_finished = false;
     state.tick();
-    std::thread::sleep(Duration::from_millis(1000));
+    std::thread::sleep(std::time::Duration::from_millis(1000));
     let update = state.tick();
     state.update(update.0.unwrap());
     assert_eq!(state.timer_text, "14.0");
@@ -130,7 +130,7 @@ fn test_tick_one_half() {
     let mut state = StreamState::new();
     state.timer_finished = false;
     state.tick();
-    std::thread::sleep(Duration::from_millis(500));
+    std::thread::sleep(std::time::Duration::from_millis(500));
     let update = state.tick();
     state.update(update.0.unwrap());
     assert_eq!(state.timer_text, "14.5");
@@ -142,7 +142,7 @@ fn test_tick_10() {
     let mut state = StreamState::new();
     state.timer_finished = false;
     state.tick();
-    std::thread::sleep(Duration::from_millis(10000));
+    std::thread::sleep(std::time::Duration::from_millis(10000));
     let update = state.tick();
     state.update(update.0.unwrap());
     assert_eq!(state.timer_text, "5.0");
