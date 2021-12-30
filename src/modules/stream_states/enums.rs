@@ -26,6 +26,19 @@ impl SubScenes {
             SubScenes::ScreenWithLowerRight => {String::from_str("Screen_Bottom_Right").unwrap()},
         }
     }
+
+    pub fn get_type(&self) -> Scenes {
+        match self {
+            SubScenes::CameraDefault | SubScenes::CameraWithUpperRight |
+            SubScenes::CameraWithLargeUpperRight | SubScenes::CameraWithLowerRight => {
+                Scenes::Camera
+            }
+            SubScenes::ScreenDefault | SubScenes::ScreenWithUpperRight |
+            SubScenes::ScreenWithLowerRight => {
+                Scenes::Screen
+            }
+        }
+    }
 }
 
 #[derive(PartialEq, Debug, Clone, Copy)]
