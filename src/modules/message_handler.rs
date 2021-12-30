@@ -1,15 +1,15 @@
 use std::time::{SystemTime, Duration};
 
-use super::{stream_states::{state_update::StateUpdate, stream_states_class::StreamState, enums::{SlideChange, Scenes}}, external_interface};
+use super::{stream_states::{state_update::StateUpdate, stream_states_class::StreamState, enums::{SlideChange, Scenes}}, external_interface, socket_handler::Socket};
 
 pub trait MessageHandler {
-    fn handle_update(&mut self, update: StateUpdate) -> ();
+    fn handle_update(&mut self, update: StateUpdate) -> Option<StateUpdate>;
     fn get_states(&self) -> StreamState;
-    fn tick(&mut self) -> ();
+    fn tick(&mut self) -> (Option<StateUpdate>, Option<StateUpdate>);
 }
 
 impl MessageHandler for StreamState {
-    fn handle_update(&mut self, update: StateUpdate) {
+    fn handle_update(&mut self, update: StateUpdate) -> Option<StateUpdate> {
         self.update(update.clone());
 
         match update {
@@ -17,7 +17,9 @@ impl MessageHandler for StreamState {
                 if self.timer_can_run {
                     self.timer_finished = false;
                     self.timer_start = SystemTime::now();
-                    self.tick();
+                }
+                if self.change_scene_on_change_slide_hotkey {
+                    self.handle_update(StateUpdate::Scene(Scenes::Screen));
                 }
                 match direction {
                     SlideChange::Next => {
@@ -30,25 +32,28 @@ impl MessageHandler for StreamState {
             }
             _ => {}
         }
+        None
     }
 
-    fn tick(&mut self) {
+    fn tick(&mut self) -> (Option<StateUpdate>, Option<StateUpdate>) {
         if self.timer_finished == false {
             let change = self.timer_start.elapsed();
             match change {
-                Err(_) => {},
+                Err(_) => {(None, None)},
                 Ok(change) => {
                     if change.as_secs_f32() >= self.timer_length {
-                        self.handle_update(StateUpdate::TimerText(String::from("0.0")));
-                        self.handle_update(StateUpdate::Scene(Scenes::Camera));
                         self.timer_finished = true;
+                        (Some(StateUpdate::TimerText(String::from("0.0"))),
+                        Some(StateUpdate::Scene(Scenes::Camera)))
                     } else {
-                        self.handle_update(StateUpdate::TimerText(
+                        (Some(StateUpdate::TimerText(
                             format!("{:.1}", self.timer_length - ((change.as_secs_f32() * 10.0).round() / 10.0))
-                        ));
+                        )), None)
                     }
                 }
-            };
+            }
+        } else {
+            (None, None)
         }
     }
 
