@@ -21,6 +21,8 @@ pub struct StreamState {
     pub current_scene: Scenes,
     pub camera_sub_scene: SubScenes,
     pub screen_sub_scene: SubScenes,
+
+    pub debug_mode: bool,
 }
 
 impl Default for StreamState {
@@ -42,6 +44,8 @@ impl Default for StreamState {
             current_scene: Scenes::Camera,
             camera_sub_scene: SubScenes::CameraDefault,
             screen_sub_scene: SubScenes::ScreenDefault,
+
+            debug_mode: false,
         }
     }
 }

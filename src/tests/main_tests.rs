@@ -20,9 +20,10 @@ fn can_make_ctrl_c_handler() {
 #[test]
 fn test_updating_state_from_state_update() {
     let mut state = StreamState::new();
+    state.debug_mode = true;
     let update = StateUpdate::Scene(Scenes::Augmented);
 
     //Update handled extensivly in stream_state_tests
-    state.handle_update(update);
+    state.update(update);
     assert_eq!(state.current_scene, Scenes::Augmented);
 }
