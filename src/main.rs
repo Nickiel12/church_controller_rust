@@ -33,7 +33,7 @@ fn main() {
     socket.send("this is a message".to_string());
 
     let hotkey_handle = thread::spawn(move || {
-        modules::hotkey_handler::create_keyboard_hooks(hotkey_channel_tx);
+        modules::external_interface::create_keyboard_hooks(hotkey_channel_tx);
     });
     
     //until control_c is caught, check the queue of incoming
