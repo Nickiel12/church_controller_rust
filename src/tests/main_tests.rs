@@ -11,8 +11,9 @@ fn it_works() {
 
 #[test]
 fn can_make_ctrl_c_handler() {
+    let (control_c_flag_tx_1, _control_c_called_flag_rx_1) = sync_flag::new_syncflag(false);
     let (control_c_flag_tx, _control_c_called_flag_rx) = sync_flag::new_syncflag(false);
-    crate::setup_control_c(control_c_flag_tx);
+    crate::setup_control_c(control_c_flag_tx, control_c_flag_tx_1);
     drop(_control_c_called_flag_rx);
 }
 
