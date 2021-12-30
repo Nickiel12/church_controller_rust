@@ -74,31 +74,3 @@ fn can_handle_delayed_messages() {
     socket.close();
 }
 
-#[test]
-fn can_send_and_receive_on_stream() {
-    let listener = Socket::make_listener("localhost:5006");
-    let (tx_1, rx_1) = unbounded::<String>();
-
-    let mut socket = Socket::handle_connections(listener, tx_1);
-
-    let mut outgoing = std::net::TcpStream::connect("localhost:5006").unwrap();
-    outgoing.set_read_timeout(Some(Duration::from_millis(1000))).expect("couln't set timout");
-
-    outgoing.write("such a test!\n".as_bytes()).unwrap();
-    outgoing.flush().unwrap();
-    thread::sleep(Duration::from_millis(250));
-    assert_eq!(rx_1.try_recv().unwrap(), "such a test!\n");
-
-    socket.send("this is another test!".to_string());
-    thread::sleep(Duration::from_millis(250));
-
-    let mut buffer = [0; 256];
-    let msg_len = outgoing.read(&mut buffer).unwrap();
-    assert!(msg_len != 0);
-    
-    let message = String::from_utf8_lossy(&buffer[0..msg_len]);
-    assert_eq!("this is another test!", message.into_owned());
-
-    drop(outgoing);
-    socket.close();
-}
