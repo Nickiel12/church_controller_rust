@@ -14,3 +14,11 @@ pub fn create_keyboard_hooks(channel_tx: crossbeam_channel::Sender<String>) {
     
     inputbot::handle_input_events();
 }
+
+pub fn next_slide() {
+    todo!()
+}
+
+pub fn prev_slide() {
+    todo!()
+}
