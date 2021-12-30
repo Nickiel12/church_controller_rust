@@ -1,2 +1,2 @@
 /target
-/src/modules/ahk_files/*.exe
+*.exe
