@@ -29,8 +29,6 @@ fn main() {
     
     
     setup_control_c(control_c_flag_tx);
-    let _outgoing = std::net::TcpStream::connect(SERVER_ADDRESS).unwrap();
-    socket.send("this is a message".to_string());
 
     let hotkey_handle = thread::spawn(move || {
         modules::external_interface::create_keyboard_hooks(hotkey_channel_tx);
@@ -44,10 +42,16 @@ fn main() {
                 println!("{}", message);
                 let json = serde_json::from_str(&message).unwrap();
                 let update = StateUpdate::json_to_state_update(json);
-                state.handle_update(update);
-                
+                let state_update = state.handle_update(update);
             },
             Err(_) => {continue},
+        }
+        let tick_update = state.tick();
+        if tick_update.0.is_some() {
+            state.handle_update(tick_update.0.unwrap());
+        }
+        if tick_update.1.is_some() {
+            state.handle_update(tick_update.1.unwrap());
         }
     }
     
