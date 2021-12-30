@@ -31,7 +31,7 @@
             "stop_stream" : "ctrl+alt+j",
             "Camera_Top_Right" : "ctrl+alt+]",
             "Camera_Bottom_Right" : "ctrl+shift+]",
-            "Camera_Bottom_Left" : "ctrl+shift+alt+]",
+            "Camera_Large_Top_Right" : "ctrl+shift+alt+]",
             "Screen_Top_Right" : "ctrl+alt+[",
             "Screen_Bottom_Right" : "ctrl+shift+["
         },
