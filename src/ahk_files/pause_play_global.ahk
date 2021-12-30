@@ -13,3 +13,10 @@ if WinExist("ahk_exe Dopamine.exe"){
         Send {Media_Play_Pause}
     }
 }
+
+If WinExist(A_Args[1]) ; propresenter
+{   ; if propresenter isn't active, switch and send clicker forward
+    if !WinActive(A_Args[1]){
+        WinActivate
+    }
+}
