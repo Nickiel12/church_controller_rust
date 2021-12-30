@@ -60,8 +60,8 @@ impl StreamState {
                 self.scene_is_augmented = new_val;
                 self.change_scene(&Scenes::Augmented)},
             StateUpdate::UpdateClient => todo!(),
-            StateUpdate::ComputerMediaDoPause(do_pause) => todo!(),
-            StateUpdate::ChangeSlide(value) => todo!(),
+            StateUpdate::ComputerMediaDoPause(do_pause) => {self.computer_sound_is_on = do_pause;},
+            StateUpdate::ChangeSlide(_value) => {panic!("Stream_states_class is not supposed to get this update type");},
         }
     }
 
