@@ -39,10 +39,11 @@ fn main() {
     let mut socket = Socket::handle_connections(socket_listener, from_socket_tx);
     
     
-    setup_control_c(control_c_flag_tx);
+    let (hotkey_close_flag_tx, hotkey_close_flag_rx) = sync_flag::new_syncflag(true);
+    setup_control_c(control_c_flag_tx, hotkey_close_flag_tx);
 
     let hotkey_handle = thread::spawn(move || {
-        modules::external_interface::create_keyboard_hooks(hotkey_channel_tx);
+        modules::external_interface::create_keyboard_hooks(hotkey_channel_tx, hotkey_close_flag_rx);
     });
     
     //until control_c is caught, check the queue of incoming
@@ -87,9 +88,11 @@ fn handle_instructions(mut instructions: Vec<StateUpdate>, state: &mut StreamSta
     }
 }
 
-fn setup_control_c(mut control_c_flag_tx: sync_flag::SyncFlagTx) {
+fn setup_control_c(mut control_c_flag_tx: sync_flag::SyncFlagTx, mut hotkey_close_flag_tx: sync_flag::SyncFlagTx) {
     ctrlc::set_handler(move || {
+        println!("ctrl c caught");
         control_c_flag_tx.set(true);
+        hotkey_close_flag_tx.set(false);
     }).expect("control C handler failed!");
 }
 

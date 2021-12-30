@@ -4,7 +4,7 @@ use super::stream_states::{state_update::StateUpdate, enums::{SlideChange, SubSc
 const AHK_FILES_FOLDER: &str = "./src/ahk_files/";
 pub const OPTIONS_PATH: &str = "./options.json";
 
-pub fn create_keyboard_hooks(channel_tx: crossbeam_channel::Sender<String>) {
+pub fn create_keyboard_hooks(channel_tx: crossbeam_channel::Sender<String>, close_flag: workctl::sync_flag::SyncFlagRx) {
     
     let tx_1 = channel_tx.clone();
     inputbot::KeybdKey::PageUpKey.bind(move || {
@@ -16,7 +16,7 @@ pub fn create_keyboard_hooks(channel_tx: crossbeam_channel::Sender<String>) {
         tx_2.send(StateUpdate::ChangeSlide(SlideChange::Previous).to_json().to_string()).unwrap();
     });
     
-    inputbot::handle_input_events();
+    inputbot::handle_input_events(close_flag);
 }
 
 pub struct Hotkeys {
