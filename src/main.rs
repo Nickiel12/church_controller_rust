@@ -52,7 +52,7 @@ fn main() {
     }
     
     socket.close();
-    hotkey_handle.join();
+    hotkey_handle.join().unwrap();
 }
 
 fn setup_control_c(mut control_c_flag_tx: sync_flag::SyncFlagTx) {
