@@ -1,15 +1,17 @@
 use std::time::{SystemTime};
 
-use super::{stream_states::{state_update::StateUpdate, stream_states_class::StreamState, enums::{SlideChange, Scenes}}, external_interface};
+use super::{stream_states::{state_update::StateUpdate, stream_states_class::StreamState, enums::{SlideChange, Scenes}}, external_interface::{Hotkeys}};
 
 pub trait MessageHandler {                              //the first one goes to socket, the second propogates
-    fn handle_update(&mut self, update: StateUpdate) -> (Option<StateUpdate>, Option<Vec<StateUpdate>>);
+    fn handle_update(&mut self, update: StateUpdate, hotkey_handler: &Hotkeys)
+     -> (Option<StateUpdate>, Option<Vec<StateUpdate>>);
     fn get_states(&self) -> StreamState;
     fn tick(&mut self) -> (Option<StateUpdate>, Option<StateUpdate>);
 }
 
 impl MessageHandler for StreamState {
-    fn handle_update(&mut self, update: StateUpdate) -> (Option<StateUpdate>, Option<Vec<StateUpdate>>) {
+    fn handle_update(&mut self, update: StateUpdate, hotkey_handler: &Hotkeys)
+     -> (Option<StateUpdate>, Option<Vec<StateUpdate>>) {
         self.update(update.clone());
 
         if self.debug_mode {
@@ -24,10 +26,10 @@ impl MessageHandler for StreamState {
                 }
                 match direction {
                     SlideChange::Next => {
-                        external_interface::next_slide();
+                        hotkey_handler.next_slide();
                     },
                     SlideChange::Previous => {
-                        external_interface::prev_slide();
+                        hotkey_handler.prev_slide();
                     }
                 }
                 if self.change_scene_on_change_slide_hotkey {
@@ -60,25 +62,25 @@ impl MessageHandler for StreamState {
                 if value.get_type() == Scenes::Camera {
                     self.camera_sub_scene = value;
                     if self.current_scene == Scenes::Camera {
-                        external_interface::change_scene(Scenes::Camera, Some(self.camera_sub_scene));
+                        hotkey_handler.change_scene(Scenes::Camera, Some(self.camera_sub_scene));
                     }
                     return (Some(update), None)
                 } else if value.get_type() == Scenes::Screen {
                     self.screen_sub_scene = value;
                     if self.current_scene == Scenes::Screen {
-                        external_interface::change_scene(Scenes::Screen, Some(self.screen_sub_scene));
+                        hotkey_handler.change_scene(Scenes::Screen, Some(self.screen_sub_scene));
                     }
                     return (Some(update), None)
                 }
             },
             StateUpdate::Scene(value) => {
-                external_interface::change_scene(value, None);
+                hotkey_handler.change_scene(value, None);
                 self.current_scene = value;
                 return (Some(update), None);
             },
-            StateUpdate::StreamSoundToggleOn(value) => {external_interface::toggle_stream_sound(value); return (Some(update), None)},
-            StateUpdate::ToggleComputerSoundOn(value) => {external_interface::toggle_computer_sound(value); return (Some(update), None)},
-            StateUpdate::ComputerMediaDoPause(value) => {external_interface::toggle_media_play_pause(value); return (Some(update), None)},
+            StateUpdate::StreamSoundToggleOn(value) => {hotkey_handler.toggle_stream_sound(value); return (Some(update), None)},
+            StateUpdate::ToggleComputerSoundOn(value) => {hotkey_handler.toggle_computer_sound(value); return (Some(update), None)},
+            StateUpdate::ComputerMediaDoPause(value) => {hotkey_handler.toggle_media_play_pause(value); return (Some(update), None)},
             StateUpdate::UpdateClient => {},
             StateUpdate::StreamRunning(_) => {},
             //_ => {}

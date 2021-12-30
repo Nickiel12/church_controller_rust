@@ -1,7 +1,7 @@
-use std::{time::Duration, thread};
+use std::{time::Duration, thread, io::Read};
 use crossbeam_channel::unbounded;
 
-use modules::{socket_handler::Socket, stream_states::stream_states_class::StreamState, message_handler::{MessageHandler}};
+use modules::{socket_handler::Socket, stream_states::stream_states_class::StreamState, message_handler::{MessageHandler}, external_interface::{Hotkeys, OPTIONS_PATH}};
 use workctl::sync_flag;
 
 use crate::modules::stream_states::state_update::StateUpdate;
@@ -18,6 +18,17 @@ const SERVER_ADDRESS: &str = "10.0.0.209:5000";
 const SERVER_ADDRESS: &str = "10.0.0.168:5000";
 
 fn main() {
+    let settings_json: serde_json::Value;
+    {
+        let mut settings_file = std::fs::File::open(OPTIONS_PATH).unwrap();
+        let mut settings_str = String::new();
+        settings_file.read_to_string(&mut settings_str).unwrap();
+        settings_json = serde_json::from_str(settings_str.as_str()).unwrap();
+        drop(settings_file);
+    }
+    let hotkeys = Hotkeys {
+        hotkeys: settings_json,
+    };
     let mut state = StreamState::new();
 
     let (control_c_flag_tx, control_c_called_flag_rx) = sync_flag::new_syncflag(false);
@@ -45,33 +56,33 @@ fn main() {
                 if update == StateUpdate::UpdateClient {
                     update_all(&state, &socket);
                 }
-                let updates = state.handle_update(update);
+                let updates = state.handle_update(update, &hotkeys);
                 if updates.0.is_some() {
                     socket.send(updates.0.unwrap().to_json().to_string());
                 }
                 if updates.1.is_some() {
-                    handle_instructions(updates.1.unwrap(), &mut state, &socket);
+                    handle_instructions(updates.1.unwrap(), &mut state, &socket, &hotkeys);
                 }
             },
             Err(_) => {continue},
         }
         let tick_update = state.tick();
-        if tick_update.0.is_some() {state.handle_update(tick_update.0.unwrap());}
-        if tick_update.1.is_some() {state.handle_update(tick_update.1.unwrap());}
+        if tick_update.0.is_some() {state.handle_update(tick_update.0.unwrap(), &hotkeys);}
+        if tick_update.1.is_some() {state.handle_update(tick_update.1.unwrap(), &hotkeys);}
     }
     
     socket.close();
     hotkey_handle.join().unwrap();
 }
 
-fn handle_instructions(mut instructions: Vec<StateUpdate>, state: &mut StreamState, socket: &Socket) {
+fn handle_instructions(mut instructions: Vec<StateUpdate>, state: &mut StreamState, socket: &Socket, hotkeys: &Hotkeys) {
     for i in instructions.iter_mut() {
-        let updates = state.handle_update(i.to_owned());
+        let updates = state.handle_update(i.to_owned(), &hotkeys);
         if updates.0.is_some() {
             socket.send(updates.0.unwrap().to_json().to_string());
         }
         if updates.1.is_some() {
-            handle_instructions(updates.1.unwrap(), state, socket);
+            handle_instructions(updates.1.unwrap(), state, socket, hotkeys);
         }
     }
 }
