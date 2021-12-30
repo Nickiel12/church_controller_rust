@@ -1,25 +1,26 @@
 use std::time::{SystemTime, Duration};
 
-use super::{stream_states::{state_update::StateUpdate, stream_states_class::StreamState, enums::{SlideChange, Scenes}}, external_interface, socket_handler::Socket};
+use super::{stream_states::{state_update::StateUpdate, stream_states_class::StreamState, enums::{SlideChange, Scenes}}, external_interface};
 
-pub trait MessageHandler {
-    fn handle_update(&mut self, update: StateUpdate) -> Option<StateUpdate>;
+pub trait MessageHandler {                              //the first one goes to socket, the second propogates
+    fn handle_update(&mut self, update: StateUpdate) -> (Option<StateUpdate>, Option<Vec<StateUpdate>>);
     fn get_states(&self) -> StreamState;
     fn tick(&mut self) -> (Option<StateUpdate>, Option<StateUpdate>);
 }
 
 impl MessageHandler for StreamState {
-    fn handle_update(&mut self, update: StateUpdate) -> Option<StateUpdate> {
+    fn handle_update(&mut self, update: StateUpdate) -> (Option<StateUpdate>, Option<Vec<StateUpdate>>) {
         self.update(update.clone());
+
+        if self.debug_mode {
+            return (None, None)
+        }
 
         match update {
             StateUpdate::ChangeSlide(direction) => {
                 if self.timer_can_run {
                     self.timer_finished = false;
                     self.timer_start = SystemTime::now();
-                }
-                if self.change_scene_on_change_slide_hotkey {
-                    self.handle_update(StateUpdate::Scene(Scenes::Screen));
                 }
                 match direction {
                     SlideChange::Next => {
@@ -29,10 +30,60 @@ impl MessageHandler for StreamState {
                         external_interface::prev_slide();
                     }
                 }
+                if self.change_scene_on_change_slide_hotkey {
+                    let mut instructions = Vec::new();
+                    instructions.push(StateUpdate::Scene(Scenes::Screen));
+
+                    return (None, Some(instructions))
+                } else {return (None, None)}
             }
+            StateUpdate::ChangeSceneOnChangeSlide(value) => {self.change_scene_on_change_slide_hotkey = value; return (Some(update), None)},
+            StateUpdate::SceneIsAugmented(value) => {
+                if value {
+                    let mut instructions = Vec::new();
+                    instructions.push(StateUpdate::ChangeSceneOnChangeSlide(false));
+                    instructions.push(StateUpdate::Scene(Scenes::Augmented));
+                    instructions.push(StateUpdate::TimerCanRun(false));
+                    return (Some(update), Some(instructions))
+                } else {
+                    let mut instructions = Vec::new();
+                    instructions.push(StateUpdate::Scene(Scenes::Camera));
+                    instructions.push(StateUpdate::ChangeSceneOnChangeSlide(true));
+                    instructions.push(StateUpdate::TimerCanRun(true));
+                    return (Some(update), Some(instructions));
+                }
+            },
+            StateUpdate::TimerCanRun(value) => {self.timer_can_run = value; return (Some(update), None)},
+            StateUpdate::TimerLength(value) => {self.timer_length = value; return (Some(update), None)},
+            StateUpdate::TimerText(value) => {self.timer_text = value.clone(); return (Some(StateUpdate::TimerText(value)), None)},
+            StateUpdate::SubScene(value) => {
+                if value.get_type() == Scenes::Camera {
+                    self.camera_sub_scene = value;
+                    if self.current_scene == Scenes::Camera {
+                        external_interface::change_scene(Scenes::Camera, Some(self.camera_sub_scene));
+                    }
+                    return (Some(update), None)
+                } else if value.get_type() == Scenes::Screen {
+                    self.screen_sub_scene = value;
+                    if self.current_scene == Scenes::Screen {
+                        external_interface::change_scene(Scenes::Screen, Some(self.screen_sub_scene));
+                    }
+                    return (Some(update), None)
+                }
+            },
+            StateUpdate::Scene(value) => {
+                external_interface::change_scene(value, None);
+                self.current_scene = value;
+                return (Some(update), None);
+            },
+            StateUpdate::StreamSoundToggleOn(value) => {external_interface::toggle_stream_sound(value); return (Some(update), None)},
+            StateUpdate::ToggleComputerSoundOn(value) => {external_interface::toggle_computer_sound(value); return (Some(update), None)},
+            StateUpdate::ComputerMediaDoPause(value) => {external_interface::toggle_media_play_pause(value); return (Some(update), None)},
+            StateUpdate::UpdateClient => {},
+            StateUpdate::StreamRunning(_) => {},
             _ => {}
         }
-        None
+        (None, None)
     }
 
     fn tick(&mut self) -> (Option<StateUpdate>, Option<StateUpdate>) {
@@ -69,7 +120,8 @@ fn test_tick_1() {
     state.timer_finished = false;
     state.tick();
     std::thread::sleep(Duration::from_millis(1000));
-    state.tick();
+    let update = state.tick();
+    state.update(update.0.unwrap());
     assert_eq!(state.timer_text, "14.0");
 }
 
@@ -79,7 +131,8 @@ fn test_tick_one_half() {
     state.timer_finished = false;
     state.tick();
     std::thread::sleep(Duration::from_millis(500));
-    state.tick();
+    let update = state.tick();
+    state.update(update.0.unwrap());
     assert_eq!(state.timer_text, "14.5");
 }
 
@@ -90,6 +143,7 @@ fn test_tick_10() {
     state.timer_finished = false;
     state.tick();
     std::thread::sleep(Duration::from_millis(10000));
-    state.tick();
+    let update = state.tick();
+    state.update(update.0.unwrap());
     assert_eq!(state.timer_text, "5.0");
 }
