@@ -10,3 +10,4 @@ workctl = "0.2.0"
 ctrlc = "3.2.1"
 serde_json = "1.0"
 crossbeam-channel = "0.5"
+inputbot = {path = "/home/nick/Documents/GitHub/InputBot"}
