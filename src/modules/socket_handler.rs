@@ -35,7 +35,8 @@ impl Socket {
                     let mut streams = thread_owned_streams.lock().unwrap();
                     streams.push(Arc::clone(&stream));
                     //pass off a clone of the thread-passable pointer
-                    Socket::handle_client(stream.as_ref(), messenger_tx.clone(),  thread_stop_flag.clone());
+                    drop(streams);
+                    Socket::handle_client(Arc::clone(&stream), messenger_tx.clone(),  thread_stop_flag.clone());
                 }
                 thread::sleep(Duration::from_millis(100));
             }
@@ -50,11 +51,11 @@ impl Socket {
         }
     }
 
-    pub fn handle_client(mut stream: &TcpStream, update_tx: Sender<String>, program_shutdown_flag: sync_flag::SyncFlagRx) {
+    pub fn handle_client(stream: Arc<TcpStream>, update_tx: Sender<String>, program_shutdown_flag: sync_flag::SyncFlagRx) {
         let mut buffer = [0; 1024];
         stream.set_read_timeout(Some(Duration::from_millis(100))).expect("Could not set a read timeout");
         while program_shutdown_flag.get() {
-            match stream.read(&mut buffer) {
+            match stream.as_ref().read(&mut buffer) {
                 Err(_) => {},
                 Ok(read_size) => {
                     //Tcp is supposed to have a 0 byte read if closed by client
@@ -79,11 +80,16 @@ impl Socket {
     }
 
     pub fn send(&self, message: String) {
-        let streams = self.socket_txs.lock().unwrap();
-        for socket_tx in streams.iter(){
-            let mut tx = socket_tx.as_ref();
-            tx.write(message.clone().as_bytes()).unwrap();
+        let mut streams = self.socket_txs.lock().unwrap();
+        for i in 0..streams.len(){
+            let mut tx = streams.get(i).unwrap().as_ref();
+            
+            match tx.write(message.clone().as_bytes()) {
+                Err(_) => {streams.remove(i); continue;},
+                Ok(_) => {},
+            }
             tx.flush().unwrap();
+            println!("sent");
         }
     }
 }

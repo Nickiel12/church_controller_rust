@@ -12,7 +12,10 @@ pub trait MessageHandler {                              //the first one goes to 
 impl MessageHandler for StreamState {
     fn handle_update(&mut self, update: StateUpdate, hotkey_handler: &Hotkeys)
      -> (Option<StateUpdate>, Option<Vec<StateUpdate>>) {
-        self.update(update.clone());
+
+        if update != StateUpdate::UpdateClient{
+            self.update(update.clone());
+        }
 
         if self.debug_mode {
             return (None, None)
@@ -80,7 +83,7 @@ impl MessageHandler for StreamState {
             },
             StateUpdate::StreamSoundToggleOn(value) => {hotkey_handler.toggle_stream_sound(value); return (Some(update), None)},
             StateUpdate::ToggleComputerSoundOn(value) => {hotkey_handler.toggle_computer_sound(value); return (Some(update), None)},
-            StateUpdate::ComputerMediaDoPause(value) => {hotkey_handler.toggle_media_play_pause(value); return (Some(update), None)},
+            StateUpdate::ComputerMediaDoPause => {hotkey_handler.toggle_media_play_pause(); return (Some(update), None)},
             StateUpdate::UpdateClient => {},
             StateUpdate::StreamRunning(_) => {},
             //_ => {}

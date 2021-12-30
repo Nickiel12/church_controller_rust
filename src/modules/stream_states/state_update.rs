@@ -8,7 +8,7 @@ pub enum StateUpdate {
     StreamRunning(bool),
     StreamSoundToggleOn(bool),
     ToggleComputerSoundOn(bool),
-    ComputerMediaDoPause(bool),
+    ComputerMediaDoPause,
     ChangeSceneOnChangeSlide(bool),
     SceneIsAugmented(bool),
     TimerCanRun(bool),
@@ -66,7 +66,7 @@ impl StateUpdate {
                     //Extra Toggles
                     "Toggle_Computer_Volume" => {StateUpdate::ToggleComputerSoundOn(string_to_bool(incoming_json["data"].as_str().unwrap()))},
                     "Toggle_Stream_Volume" => {StateUpdate::StreamSoundToggleOn(string_to_bool(incoming_json["data"].as_str().unwrap()))},
-                    "Media_Pause_Play" => {StateUpdate::ComputerMediaDoPause(string_to_bool(incoming_json["data"].as_str().unwrap()))},
+                    "Media_Pause_Play" => {StateUpdate::ComputerMediaDoPause},
                     "Timer_Text" => {StateUpdate::TimerText(incoming_json["data"].as_str().unwrap().to_string())}
 
                     "all" => {StateUpdate::UpdateClient},
@@ -107,8 +107,8 @@ impl StateUpdate {
                 ("SubScene", scene.to_string())},
             StateUpdate::Scene(scene) => {
                 ("Scene", scene.to_string())},
-            StateUpdate::ComputerMediaDoPause(is_true) => {
-                ("Toggle_Computer_Volume", is_true.to_string())},
+            StateUpdate::ComputerMediaDoPause => {
+                ("Toggle_Computer_Volume", "".to_string())},
             StateUpdate::ChangeSlide(value) => {
                 match value {
                     SlideChange::Next => {("Next_Slide", "".to_string())},

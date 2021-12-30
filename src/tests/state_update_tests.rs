@@ -50,11 +50,7 @@ fn test_json_to_state_update() {
 
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
         "{\"type\": \"update\", \"update\": \"Media_Pause_Play\", \"data\": \"true\"}"
-        ).unwrap()), StateUpdate::ComputerMediaDoPause(true));
-
-    assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
-        "{\"type\": \"update\", \"update\": \"Media_Pause_Play\", \"data\": \"false\"}"
-        ).unwrap()), StateUpdate::ComputerMediaDoPause(false));
+        ).unwrap()), StateUpdate::ComputerMediaDoPause);
 
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
         "{\"type\": \"update\", \"update\": \"SubScene\", \"data\": \"Camera_None\"}"

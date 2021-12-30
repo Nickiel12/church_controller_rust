@@ -50,7 +50,7 @@ fn main() {
     while !control_c_called_flag_rx.get() {
         match from_socket_rx.recv_timeout(Duration::from_millis(100)) {
             Ok(message) => {
-                println!("{}", message);
+                println!("main recieved: {}", message);
                 let json = serde_json::from_str(&message).unwrap();
                 let update = StateUpdate::json_to_state_update(json);
                 if update == StateUpdate::UpdateClient {
@@ -94,6 +94,7 @@ fn setup_control_c(mut control_c_flag_tx: sync_flag::SyncFlagTx) {
 }
 
 fn update_all(state: &StreamState, socket: &Socket) {
+    println!("updating all");
     socket.send(StateUpdate::StreamRunning(state.stream_running).to_json().to_string());
     socket.send(StateUpdate::StreamSoundToggleOn(state.stream_is_muted).to_json().to_string());
     socket.send(StateUpdate::ToggleComputerSoundOn(state.computer_sound_is_on).to_json().to_string());

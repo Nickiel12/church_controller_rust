@@ -106,7 +106,7 @@ impl Hotkeys {
         };
     }
     
-    pub fn toggle_media_play_pause(&self, _value: bool) {
+    pub fn toggle_media_play_pause(&self) {
         if cfg!(target_os = "windows") {
             Command::new(String::from(AHK_FILES_FOLDER) + "music_toggle.exe")
                 .arg(self.hotkeys["windows"]["propresenter_re"].to_string()) 
@@ -139,5 +139,5 @@ fn hotkeys() {
     hk.send_obs(String::from("a hotkey"));
     hk.toggle_computer_sound(true);
     hk.toggle_stream_sound(true);
-    hk.toggle_media_play_pause(false);
+    hk.toggle_media_play_pause();
 }
