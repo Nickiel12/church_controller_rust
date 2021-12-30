@@ -6,6 +6,7 @@ use workctl::sync_flag;
 
 use crate::modules::stream_states::state_update::StateUpdate;
 
+#[cfg(test)]
 mod tests;
 mod modules;
 
@@ -25,15 +26,17 @@ fn main() {
     setup_control_c(control_c_flag_tx);
     let _outgoing = std::net::TcpStream::connect(SERVER_ADDRESS).unwrap();
     socket.send("this is a message".to_string());
+    
     //until control_c is caught, check the queue of incoming
     //requests from the socket handler.
     while !control_c_called_flag_rx.get() {
         match from_socket_rx.recv_timeout(Duration::from_millis(100)) {
             Ok(message) => {
                 println!("{}", message);
-                let json = serde_json::from_str(&message[1..]).unwrap();
+                let json = serde_json::from_str(&message).unwrap();
                 let update = StateUpdate::json_to_state_update(json);
                 state.handle_update(update);
+                
             },
             Err(_) => {continue},
         }
