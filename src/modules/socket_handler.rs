@@ -35,7 +35,7 @@ impl Socket {
                     let mut streams = thread_owned_streams.lock().unwrap();
                     streams.push(Arc::clone(&stream));
                     //pass off a clone of the thread-passable pointer
-                    Socket::handle_client(stream.as_ref(), messenger_tx.clone(),  thread_stop_flag.clone(), Arc::clone(&thread_owned_streams));
+                    Socket::handle_client(stream.as_ref(), messenger_tx.clone(),  thread_stop_flag.clone());
                 }
                 thread::sleep(Duration::from_millis(100));
             }
@@ -50,7 +50,7 @@ impl Socket {
         }
     }
 
-    pub fn handle_client(mut stream: &TcpStream, update_tx: Sender<String>, program_shutdown_flag: sync_flag::SyncFlagRx, thread_owned_streams: Arc<Mutex<Vec<Arc<TcpStream>>>>) {
+    pub fn handle_client(mut stream: &TcpStream, update_tx: Sender<String>, program_shutdown_flag: sync_flag::SyncFlagRx) {
         let mut buffer = [0; 1024];
         stream.set_read_timeout(Some(Duration::from_millis(100))).expect("Could not set a read timeout");
         while program_shutdown_flag.get() {
