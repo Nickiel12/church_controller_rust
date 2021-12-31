@@ -29,22 +29,25 @@ pub struct Hotkeys {
 }
 
 impl Hotkeys {
-    pub fn get_hotkey_from_scene(&self, scene: SubScenes) -> String {
+    pub fn get_hotkey_from_scene(&self, scene: SubScenes) -> &str {
         match scene {
-            SubScenes::CameraDefault => {self.hotkeys["hotkeys"]["obs"]["camera_scene_hotkey"].to_string()},
-            SubScenes::CameraWithUpperRight => {self.hotkeys["hotkeys"]["obs"]["Camera_Top_Right"].to_string()},
-            SubScenes::CameraWithLargeUpperRight => {self.hotkeys["hotkeys"]["obs"]["Camera_Large_Top_Right"].to_string()},
-            SubScenes::CameraWithLowerRight => {self.hotkeys["hotkeys"]["obs"]["Camera_Bottom_Right"].to_string()},
-            SubScenes::ScreenDefault => {self.hotkeys["hotkeys"]["obs"]["screen_scene_hotkey"].to_string()},
-            SubScenes::ScreenWithUpperRight => {self.hotkeys["hotkeys"]["obs"]["Screen_Top_Right"].to_string()},
-            SubScenes::ScreenWithLowerRight => {self.hotkeys["hotkeys"]["obs"]["Screen_Bottom_Right"].to_string()},
+            SubScenes::CameraDefault => {self.hotkeys["hotkeys"]["obs"]["camera_scene_hotkey"].as_str().unwrap()},
+            SubScenes::CameraWithUpperRight => {self.hotkeys["hotkeys"]["obs"]["Camera_Top_Right"].as_str().unwrap()},
+            SubScenes::CameraWithLargeUpperRight => {self.hotkeys["hotkeys"]["obs"]["Camera_Large_Top_Right"].as_str().unwrap()},
+            SubScenes::CameraWithLowerRight => {self.hotkeys["hotkeys"]["obs"]["Camera_Bottom_Right"].as_str().unwrap()},
+            SubScenes::ScreenDefault => {self.hotkeys["hotkeys"]["obs"]["screen_scene_hotkey"].as_str().unwrap()},
+            SubScenes::ScreenWithUpperRight => {self.hotkeys["hotkeys"]["obs"]["Screen_Top_Right"].as_str().unwrap()},
+            SubScenes::ScreenWithLowerRight => {self.hotkeys["hotkeys"]["obs"]["Screen_Bottom_Right"].as_str().unwrap()},
         }
     }
-    pub fn send_obs(&self, hotkey: String) {
-        if cfg!(target_os = "windows") {
+    pub fn send_obs(&self, hotkey: &str) {
+        println!("send to obs please?");
+        if cfg!(target_family = "windows") {
+            println!("yes, send to obs?");
+            println!("{}", self.hotkeys["windows"]["propresenter_re"].as_str().unwrap());
             Command::new(String::from(AHK_FILES_FOLDER) + "send_obs_back_to_propre.exe")
-                .args([self.hotkeys["windows"]["propresenter_re"].to_string(),
-                       self.hotkeys["windows"]["obs_re"].to_string(),
+                .args([self.hotkeys["windows"]["propresenter_re"].as_str().unwrap(),
+                       self.hotkeys["windows"]["obs_re"].as_str().unwrap(),
                        hotkey])
                 .spawn()
                 .expect("next_slide process call failed");
@@ -54,33 +57,33 @@ impl Hotkeys {
     }
 
     pub fn next_slide(&self) {
-        if cfg!(target_os = "windows") {
+        if cfg!(target_family = "windows") {
             Command::new(String::from(AHK_FILES_FOLDER) + "switch_and_send.exe")
-                .args([self.hotkeys["windows"]["propresenter_re"].to_string(), 
-                       self.hotkeys["general"]["clicker_forward"].to_string()])
+                .args([self.hotkeys["windows"]["propresenter_re"].as_str().unwrap(), 
+                       self.hotkeys["general"]["clicker_forward"].as_str().unwrap()])
                 .spawn()
                 .expect("next_slide process call failed");
         } else {
-            println!("pretend linux is sending prosenter next: {}", self.hotkeys["general"]["clicker_forward"].to_string())
+            println!("pretend linux is sending prosenter next: {}", self.hotkeys["general"]["clicker_forward"].as_str().unwrap())
         };
     }
     
     pub fn prev_slide(&self) {
-        if cfg!(target_os = "windows") {
+        if cfg!(target_family = "windows") {
             Command::new(String::from(AHK_FILES_FOLDER) + "switch_and_send.exe")
-                .args([self.hotkeys["windows"]["propresenter_re"].to_string(), 
-                       self.hotkeys["general"]["clicker_backward"].to_string()])
+                .args([self.hotkeys["windows"]["propresenter_re"].as_str().unwrap(), 
+                       self.hotkeys["general"]["clicker_backward"].as_str().unwrap()])
                 .spawn()
                 .expect("next_slide process call failed");
         } else {
-            println!("pretend linux is sending prosenter next: {}", self.hotkeys["general"]["clicker_backward"].to_string())
+            println!("pretend linux is sending prosenter next: {}", self.hotkeys["general"]["clicker_backward"].as_str().unwrap())
         };
     }
 
     pub fn change_scene(&self, _scene: Scenes, sub_scene: Option<SubScenes>) {
-        let hotkey: String;
+        let hotkey: &str;
         if sub_scene.is_none() {
-            hotkey = self.hotkeys["hotkeys"]["obs"]["camera_scene_augmented"].to_string()
+            hotkey = self.hotkeys["hotkeys"]["obs"]["camera_scene_augmented"].as_str().unwrap()
         } else {
             hotkey = self.get_hotkey_from_scene(sub_scene.unwrap())
         };
@@ -88,11 +91,11 @@ impl Hotkeys {
     }
     
     pub fn toggle_stream_sound(&self, turn_on: bool) {
-        let hotkey: String;
+        let hotkey: &str;
         if turn_on {
-            hotkey = self.hotkeys["hotkeys"]["obs"]["unmute_stream"].to_string();
+            hotkey = self.hotkeys["hotkeys"]["obs"]["unmute_stream"].as_str().unwrap();
         } else {
-            hotkey = self.hotkeys["hotkeys"]["obs"]["mute_stream"].to_string();
+            hotkey = self.hotkeys["hotkeys"]["obs"]["mute_stream"].as_str().unwrap();
         }
         self.send_obs(hotkey);
     }
@@ -100,25 +103,25 @@ impl Hotkeys {
     pub fn toggle_computer_sound(&self, value: bool) {
         let direction: u8 = if value {1} else {0};
         let time_delay = self.hotkeys["general"]["music_fade_time"].as_i64().unwrap();
-        if cfg!(target_os = "windows") {
+        if cfg!(target_family = "windows") {
             Command::new(String::from(AHK_FILES_FOLDER) + "music_toggle.exe")
                 .arg(direction.to_string()) 
                 .arg(time_delay.to_string())
                 .spawn()
                 .expect("next_slide process call failed");
         } else {
-            println!("pretend linux is sending prosenter next: {}", self.hotkeys["general"]["clicker_backward"].to_string())
+            println!("pretend linux is sending prosenter next: {}", self.hotkeys["general"]["clicker_backward"].as_str().unwrap())
         };
     }
     
     pub fn toggle_media_play_pause(&self) {
-        if cfg!(target_os = "windows") {
+        if cfg!(target_family = "windows") {
             Command::new(String::from(AHK_FILES_FOLDER) + "music_toggle.exe")
-                .arg(self.hotkeys["windows"]["propresenter_re"].to_string()) 
+                .arg(self.hotkeys["windows"]["propresenter_re"].as_str().unwrap()) 
                 .spawn()
                 .expect("next_slide process call failed");
         } else {
-            println!("pretend linux is sending prosenter next: {}", self.hotkeys["general"]["clicker_backward"].to_string())
+            println!("pretend linux is sending prosenter next: {}", self.hotkeys["general"]["clicker_backward"].as_str().unwrap())
         };
     }    
 }
@@ -141,7 +144,7 @@ fn hotkeys() {
     hk.change_scene(Scenes::Augmented, Some(SubScenes::CameraDefault));
     hk.next_slide();
     hk.prev_slide();
-    hk.send_obs(String::from("a hotkey"));
+    hk.send_obs("a hotkey");
     hk.toggle_computer_sound(true);
     hk.toggle_stream_sound(true);
     hk.toggle_media_play_pause();
