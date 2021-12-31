@@ -40,6 +40,7 @@ impl Socket {
                 }
                 thread::sleep(Duration::from_millis(100));
             }
+            println!("closed socket loop");
             has_closed_tx.set(true);
             drop(listener);
         });
