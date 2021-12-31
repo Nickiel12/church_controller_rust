@@ -53,7 +53,7 @@ impl Socket {
 
     pub fn handle_client(stream: Arc<TcpStream>, update_tx: Sender<String>, program_shutdown_flag: sync_flag::SyncFlagRx) {
         let mut buffer = [0; 1024];
-        stream.set_read_timeout(Some(Duration::from_millis(100))).expect("Could not set a read timeout");
+        stream.set_read_timeout(Some(Duration::from_millis(10))).expect("Could not set a read timeout");
         while program_shutdown_flag.get() {
             match stream.as_ref().read(&mut buffer) {
                 Err(_) => {},
@@ -85,11 +85,11 @@ impl Socket {
             let mut tx = streams.get(i).unwrap().as_ref();
             
             match tx.write(message.clone().as_bytes()) {
-                Err(_) => {streams.remove(i); continue;},
+                Err(_) => {streams.remove(i); println!("removed a socket"); continue;},
                 Ok(_) => {},
             }
+            tx.write(b"\n").unwrap();
             tx.flush().unwrap();
-            println!("sent");
         }
     }
 }

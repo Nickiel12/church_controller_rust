@@ -58,7 +58,17 @@ impl MessageHandler for StreamState {
                     return (Some(update), Some(instructions));
                 }
             },
-            StateUpdate::TimerCanRun(value) => {self.timer_can_run = value; return (Some(update), None)},
+            StateUpdate::TimerCanRun(value) => {
+                self.timer_can_run = value;
+                self.timer_start = SystemTime::now();
+                if value {
+                    let mut instruction = Vec::new();
+                    instruction.push(StateUpdate::TimerText(String::from("0.0")));
+                    return (Some(update), Some(instruction))
+                } else {
+                    return (Some(update), None);
+                }
+            }
             StateUpdate::TimerLength(value) => {self.timer_length = value; return (Some(update), None)},
             StateUpdate::TimerText(value) => {self.timer_text = value.clone(); return (Some(StateUpdate::TimerText(value)), None)},
             StateUpdate::SubScene(value) => {
@@ -79,6 +89,14 @@ impl MessageHandler for StreamState {
             StateUpdate::Scene(value) => {
                 hotkey_handler.change_scene(value, None);
                 self.current_scene = value;
+
+                if value == Scenes::Screen {
+                    self.timer_start = SystemTime::now();
+                    self.timer_finished = false;
+                } else {
+                    self.timer_finished = true;
+                }
+
                 return (Some(update), None);
             },
             StateUpdate::StreamSoundToggleOn(value) => {hotkey_handler.toggle_stream_sound(value); return (Some(update), None)},
@@ -92,7 +110,7 @@ impl MessageHandler for StreamState {
     }
 
     fn tick(&mut self) -> (Option<StateUpdate>, Option<StateUpdate>) {
-        if self.timer_finished == false {
+        if self.timer_finished == false && self.timer_can_run == true {
             let change = self.timer_start.elapsed();
             match change {
                 Err(_) => {(None, None)},
