@@ -65,11 +65,19 @@ fn main() {
                     handle_instructions(updates.1.unwrap(), &mut state, &socket, &hotkeys);
                 }
             },
-            Err(_) => {continue},
+            Err(_) => {},
         }
         let tick_update = state.tick();
-        if tick_update.0.is_some() {state.handle_update(tick_update.0.unwrap(), &hotkeys);}
-        if tick_update.1.is_some() {state.handle_update(tick_update.1.unwrap(), &hotkeys);}
+        if tick_update.0.is_some() {
+            let update = state.handle_update(tick_update.0.unwrap(), &hotkeys);
+            if update.0.is_some() {socket.send(update.0.unwrap().to_json().to_string());}
+            if update.1.is_some() {handle_instructions(update.1.unwrap(), &mut state, &socket, &hotkeys);}
+        }
+        if tick_update.1.is_some() {
+            let update = state.handle_update(tick_update.1.unwrap(), &hotkeys);
+            if update.0.is_some() {socket.send(update.0.unwrap().to_json().to_string());}
+            if update.1.is_some() {handle_instructions(update.1.unwrap(), &mut state, &socket, &hotkeys);}
+        }
     }
     
     socket.close();
