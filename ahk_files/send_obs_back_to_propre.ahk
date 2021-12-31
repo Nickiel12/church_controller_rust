@@ -16,7 +16,7 @@ If WinExist(A_Args[2]) ;OBS
     Send {%arg%}
 }
 
-sleep 300
+sleep 200
 
 If WinExist(A_Args[1]) ; Propresenter
 {   ; switch back to propresenter
