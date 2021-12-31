@@ -55,7 +55,7 @@ impl Hotkeys {
 
     pub fn next_slide(&self) {
         if cfg!(target_family = "windows") {
-            Command::new(String::from(AHK_FILES_FOLDER) + "switch_and_send.exe")
+            Command::new(String::from(AHK_FILES_FOLDER) + "propre_send.exe")
                 .args([self.hotkeys["windows"]["propresenter_re"].as_str().unwrap(), 
                        self.hotkeys["general"]["clicker_forward"].as_str().unwrap()])
                 .spawn()
@@ -67,7 +67,7 @@ impl Hotkeys {
     
     pub fn prev_slide(&self) {
         if cfg!(target_family = "windows") {
-            Command::new(String::from(AHK_FILES_FOLDER) + "switch_and_send.exe")
+            Command::new(String::from(AHK_FILES_FOLDER) + "propre_send.exe")
                 .args([self.hotkeys["windows"]["propresenter_re"].as_str().unwrap(), 
                        self.hotkeys["general"]["clicker_backward"].as_str().unwrap()])
                 .spawn()
