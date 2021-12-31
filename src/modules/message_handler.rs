@@ -88,7 +88,6 @@ impl MessageHandler for StreamState {
                 }
             },
             StateUpdate::Scene(value) => {
-                hotkey_handler.change_scene(value, None);
                 self.current_scene = value;
 
                 if value == Scenes::Screen {
@@ -96,6 +95,18 @@ impl MessageHandler for StreamState {
                     self.timer_finished = false;
                 } else {
                     self.timer_finished = true;
+                }
+
+                match self.current_scene {
+                    Scenes::Camera => {
+                        hotkey_handler.change_scene(Scenes::Camera, Some(self.camera_sub_scene));
+                    },
+                    Scenes::Screen => {
+                        hotkey_handler.change_scene(Scenes::Screen, Some(self.screen_sub_scene));
+                    },
+                    Scenes::Augmented => {
+                        hotkey_handler.change_scene(Scenes::Augmented, None);
+                    }
                 }
 
                 return (Some(update), None);
