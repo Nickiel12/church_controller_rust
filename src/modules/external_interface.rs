@@ -41,10 +41,7 @@ impl Hotkeys {
         }
     }
     pub fn send_obs(&self, hotkey: &str) {
-        println!("send to obs please?");
         if cfg!(target_family = "windows") {
-            println!("yes, send to obs?");
-            println!("{}", self.hotkeys["windows"]["propresenter_re"].as_str().unwrap());
             Command::new(String::from(AHK_FILES_FOLDER) + "send_obs_back_to_propre.exe")
                 .args([self.hotkeys["windows"]["propresenter_re"].as_str().unwrap(),
                        self.hotkeys["windows"]["obs_re"].as_str().unwrap(),
