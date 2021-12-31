@@ -81,6 +81,7 @@ impl Socket {
 
     pub fn send(&self, message: String) {
         let mut streams = self.socket_txs.lock().unwrap();
+        if streams.len() == 0 {return}
         for i in 0..streams.len(){
             let mut tx = streams.get(i).unwrap().as_ref();
             

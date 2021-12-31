@@ -1,8 +1,13 @@
 use std::process::Command;
 use super::stream_states::{state_update::StateUpdate, enums::{SlideChange, SubScenes, Scenes}};
 
-const AHK_FILES_FOLDER: &str = "./src/ahk_files/";
-pub const OPTIONS_PATH: &str = "./options.json";
+const AHK_FILES_FOLDER: &str = ".\\ahk_files\\";
+pub const OPTIONS_PATH: &str = ".\\options.json";
+
+    /*
+    const AHK_FILES_FOLDER: &str = "./src/ahk_files/";
+    pub const OPTIONS_PATH: &str = "./options.json";
+    */
 
 pub fn create_keyboard_hooks(channel_tx: crossbeam_channel::Sender<String>, close_flag: workctl::sync_flag::SyncFlagRx) {
     

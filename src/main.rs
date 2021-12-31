@@ -12,7 +12,7 @@ mod modules;
 
 
 #[cfg(target_os = "windows")]
-const SERVER_ADDRESS: &str = "10.0.0.209:5000";
+const SERVER_ADDRESS: &str = "10.0.0.168:5000";
 
 #[cfg(target_os = "linux")]
 const SERVER_ADDRESS: &str = "10.0.0.168:5000";
