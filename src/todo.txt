@@ -1,0 +1,3 @@
+also, that weird "dropped connection, i be silent" bug is still there. Is it a windows file descriptor drop?
+
+Next events are crashing the program

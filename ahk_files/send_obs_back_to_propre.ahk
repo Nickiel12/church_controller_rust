@@ -10,9 +10,13 @@ If WinExist(A_Args[2]) ;OBS
 {   ; if obs isn't active, switch to it, and send the hotkey
     If !WinActive(A_Args[2]) {
         WinActivate
-        Send A_Args[3]
+        sleep 200
     }
+    arg := A_Args[3]
+    Send {%arg%}
 }
+
+sleep 100
 
 If WinExist(A_Args[1]) ; Propresenter
 {   ; switch back to propresenter

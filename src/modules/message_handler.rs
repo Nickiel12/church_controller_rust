@@ -13,7 +13,8 @@ impl MessageHandler for StreamState {
     fn handle_update(&mut self, update: StateUpdate, hotkey_handler: &Hotkeys)
      -> (Option<StateUpdate>, Option<Vec<StateUpdate>>) {
 
-        if update != StateUpdate::UpdateClient{
+        if update != StateUpdate::UpdateClient && update != StateUpdate::ChangeSlide(SlideChange::Next) &&
+            update != StateUpdate::ChangeSlide(SlideChange::Previous){
             self.update(update.clone());
         }
 
@@ -87,7 +88,6 @@ impl MessageHandler for StreamState {
                 }
             },
             StateUpdate::Scene(value) => {
-                hotkey_handler.change_scene(value, None);
                 self.current_scene = value;
 
                 if value == Scenes::Screen {
@@ -97,10 +97,22 @@ impl MessageHandler for StreamState {
                     self.timer_finished = true;
                 }
 
+                match self.current_scene {
+                    Scenes::Camera => {
+                        hotkey_handler.change_scene(Scenes::Camera, Some(self.camera_sub_scene));
+                    },
+                    Scenes::Screen => {
+                        hotkey_handler.change_scene(Scenes::Screen, Some(self.screen_sub_scene));
+                    },
+                    Scenes::Augmented => {
+                        hotkey_handler.change_scene(Scenes::Augmented, None);
+                    }
+                }
+
                 return (Some(update), None);
             },
             StateUpdate::StreamSoundToggleOn(value) => {hotkey_handler.toggle_stream_sound(value); return (Some(update), None)},
-            StateUpdate::ToggleComputerSoundOn(value) => {hotkey_handler.toggle_computer_sound(value); return (Some(update), None)},
+            StateUpdate::ToggleComputerSoundOn(value) => {hotkey_handler.toggle_computer_sound(!value); return (Some(StateUpdate::ToggleComputerSoundOn(!value)), None)},
             StateUpdate::ComputerMediaDoPause => {hotkey_handler.toggle_media_play_pause(); return (Some(update), None)},
             StateUpdate::UpdateClient => {},
             StateUpdate::StreamRunning(_) => {},

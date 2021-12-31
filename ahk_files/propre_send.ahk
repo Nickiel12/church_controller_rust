@@ -10,6 +10,8 @@ If WinExist(A_Args[1]) ; propresenter
 {   ; if propresenter isn't active, switch and send clicker forward
     if !WinActive(A_Args[1]){
         WinActivate
-        Send A_Args[2]
+        sleep 200
     }
+    arg := A_Args[2]
+    Send {%arg%}
 }
