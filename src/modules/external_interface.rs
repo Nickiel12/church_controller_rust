@@ -48,6 +48,7 @@ impl Hotkeys {
                        hotkey])
                 .spawn()
                 .expect("next_slide process call failed");
+            std::thread::sleep(std::time::Duration::from_millis(400));
         } else {
             println!("pretend linux is sending obs send: {}", hotkey)
         };
@@ -60,6 +61,7 @@ impl Hotkeys {
                        self.hotkeys["general"]["clicker_forward"].as_str().unwrap()])
                 .spawn()
                 .expect("next_slide process call failed");
+                std::thread::sleep(std::time::Duration::from_millis(200));
         } else {
             println!("pretend linux is sending prosenter next: {}", self.hotkeys["general"]["clicker_forward"].as_str().unwrap())
         };
@@ -72,6 +74,7 @@ impl Hotkeys {
                        self.hotkeys["general"]["clicker_backward"].as_str().unwrap()])
                 .spawn()
                 .expect("next_slide process call failed");
+                std::thread::sleep(std::time::Duration::from_millis(200));
         } else {
             println!("pretend linux is sending prosenter next: {}", self.hotkeys["general"]["clicker_backward"].as_str().unwrap())
         };
