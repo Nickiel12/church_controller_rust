@@ -74,41 +74,46 @@ impl MessageHandler for StreamState {
             StateUpdate::TimerText(value) => {self.timer_text = value.clone(); return (Some(StateUpdate::TimerText(value)), None)},
             StateUpdate::SubScene(value) => {
                 if value.get_type() == Scenes::Camera {
-                    self.camera_sub_scene = value;
                     if self.current_scene == Scenes::Camera {
                         hotkey_handler.change_scene(Scenes::Camera, Some(self.camera_sub_scene));
                     }
+                    self.camera_sub_scene = value;
                     return (Some(update), None)
                 } else if value.get_type() == Scenes::Screen {
-                    self.screen_sub_scene = value;
-                    if self.current_scene == Scenes::Screen {
+                    if self.current_scene == Scenes::Screen{
                         hotkey_handler.change_scene(Scenes::Screen, Some(self.screen_sub_scene));
                     }
+                    self.screen_sub_scene = value;
                     return (Some(update), None)
                 }
             },
             StateUpdate::Scene(value) => {
-                self.current_scene = value;
-
+                
                 if value == Scenes::Screen {
-                    self.timer_start = SystemTime::now();
-                    self.timer_finished = false;
+                    if self.current_scene != Scenes::Screen {
+                        self.timer_start = SystemTime::now();
+                        self.timer_finished = false;
+                    }
                 } else {
                     self.timer_finished = true;
                 }
 
-                match self.current_scene {
-                    Scenes::Camera => {
-                        hotkey_handler.change_scene(Scenes::Camera, Some(self.camera_sub_scene));
-                    },
-                    Scenes::Screen => {
-                        hotkey_handler.change_scene(Scenes::Screen, Some(self.screen_sub_scene));
-                    },
-                    Scenes::Augmented => {
-                        hotkey_handler.change_scene(Scenes::Augmented, None);
+                
+                if self.current_scene != value {
+                    match self.current_scene {
+                        Scenes::Camera => {
+                            hotkey_handler.change_scene(Scenes::Camera, Some(self.camera_sub_scene));
+                        },
+                        Scenes::Screen => {
+                            hotkey_handler.change_scene(Scenes::Screen, Some(self.screen_sub_scene));
+                        },
+                        Scenes::Augmented => {
+                            hotkey_handler.change_scene(Scenes::Augmented, None);
+                        }
                     }
                 }
-
+                
+                self.current_scene = value;
                 return (Some(update), None);
             },
             StateUpdate::StreamSoundToggleOn(value) => {hotkey_handler.toggle_stream_sound(value); return (Some(update), None)},
