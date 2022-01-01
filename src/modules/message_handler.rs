@@ -95,9 +95,7 @@ impl MessageHandler for StreamState {
                 }
             },
             StateUpdate::Scene(value) => {
-                println!("dong: {:?}", value);
                 if value == Scenes::Screen {
-                    println!("doink: {:?}", self.current_scene);
                     if self.current_scene != Scenes::Screen {
                         println!("ping");
                         self.timer_start = SystemTime::now();
