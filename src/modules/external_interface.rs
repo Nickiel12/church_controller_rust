@@ -86,6 +86,7 @@ impl Hotkeys {
     }
 
     pub fn change_scene(&self, scene: Scenes, sub_scene: Option<SubScenes>) {
+        println!("sending: {:?}  : {:?}", scene, sub_scene);
         let hotkey: &str;
         if scene == Scenes::Augmented {
             hotkey = self.hotkeys["hotkeys"]["obs"]["camera_scene_augmented"].as_str().unwrap()

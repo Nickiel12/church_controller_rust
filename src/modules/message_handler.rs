@@ -95,9 +95,9 @@ impl MessageHandler for StreamState {
                 }
             },
             StateUpdate::Scene(value) => {
+                println!("{:?}", value);
                 if value == Scenes::Screen {
                     if self.current_scene != Scenes::Screen {
-                        println!("ping");
                         self.timer_start = SystemTime::now();
                         self.timer_finished = false;
                     }
@@ -106,7 +106,7 @@ impl MessageHandler for StreamState {
                 }
 
                 if self.current_scene != value {
-                    match self.current_scene {
+                    match value {
                         Scenes::Camera => {
                             hotkey_handler.change_scene(Scenes::Camera, Some(self.camera_sub_scene));
                         },
@@ -114,6 +114,7 @@ impl MessageHandler for StreamState {
                             hotkey_handler.change_scene(Scenes::Screen, Some(self.screen_sub_scene));
                         },
                         Scenes::Augmented => {
+                            println!("Augment!");
                             hotkey_handler.change_scene(Scenes::Augmented, None);
                         }
                     }
