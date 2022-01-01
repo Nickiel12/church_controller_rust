@@ -13,12 +13,12 @@ pub fn create_keyboard_hooks(channel_tx: crossbeam_channel::Sender<String>, clos
     
     let tx_1 = channel_tx.clone();
     inputbot::KeybdKey::PageUpKey.bind(move || {
-        tx_1.send(StateUpdate::ChangeSlide(SlideChange::Next).to_json().to_string()).unwrap();
+        tx_1.send(StateUpdate::ChangeSlide(SlideChange::PreviousHotkey).to_json().to_string()).unwrap();
     });
 
     let tx_2 = channel_tx.clone();
     inputbot::KeybdKey::PageDownKey.bind(move || {
-        tx_2.send(StateUpdate::ChangeSlide(SlideChange::Previous).to_json().to_string()).unwrap();
+        tx_2.send(StateUpdate::ChangeSlide(SlideChange::NextHotkey).to_json().to_string()).unwrap();
     });
     
     inputbot::handle_input_events(close_flag);
@@ -42,6 +42,7 @@ impl Hotkeys {
     }
     pub fn send_obs(&self, hotkey: &str) {
         if cfg!(target_family = "windows") {
+            println!("sending to obs");
             Command::new(String::from(AHK_FILES_FOLDER) + "send_obs_back_to_propre.exe")
                 .args([self.hotkeys["windows"]["propresenter_re"].as_str().unwrap(),
                        self.hotkeys["windows"]["obs_re"].as_str().unwrap(),
@@ -54,11 +55,13 @@ impl Hotkeys {
         };
     }
 
-    pub fn next_slide(&self) {
+    pub fn next_slide(&self, from_hotkey: bool) {
+        let from_hotkey_str = {if from_hotkey {"1"} else {"0"}};
         if cfg!(target_family = "windows") {
             Command::new(String::from(AHK_FILES_FOLDER) + "propre_send.exe")
                 .args([self.hotkeys["windows"]["propresenter_re"].as_str().unwrap(), 
-                       self.hotkeys["general"]["clicker_forward"].as_str().unwrap()])
+                       self.hotkeys["general"]["clicker_forward"].as_str().unwrap(),
+                       from_hotkey_str])
                 .spawn()
                 .expect("next_slide process call failed");
                 std::thread::sleep(std::time::Duration::from_millis(200));
@@ -67,11 +70,13 @@ impl Hotkeys {
         };
     }
     
-    pub fn prev_slide(&self) {
+    pub fn prev_slide(&self, from_hotkey: bool) {
+        let from_hotkey_str = {if from_hotkey {"1"} else {"0"}};
         if cfg!(target_family = "windows") {
             Command::new(String::from(AHK_FILES_FOLDER) + "propre_send.exe")
                 .args([self.hotkeys["windows"]["propresenter_re"].as_str().unwrap(), 
-                       self.hotkeys["general"]["clicker_backward"].as_str().unwrap()])
+                       self.hotkeys["general"]["clicker_backward"].as_str().unwrap(),
+                       from_hotkey_str])
                 .spawn()
                 .expect("next_slide process call failed");
                 std::thread::sleep(std::time::Duration::from_millis(200));
@@ -142,8 +147,8 @@ fn hotkeys() {
         hotkeys: settings_json,
     };
     hk.change_scene(Scenes::Augmented, Some(SubScenes::CameraDefault));
-    hk.next_slide();
-    hk.prev_slide();
+    hk.next_slide(false);
+    hk.prev_slide(false);
     hk.send_obs("a hotkey");
     hk.toggle_computer_sound(true);
     hk.toggle_stream_sound(true);
