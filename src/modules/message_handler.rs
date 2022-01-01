@@ -13,8 +13,9 @@ impl MessageHandler for StreamState {
     fn handle_update(&mut self, update: StateUpdate, hotkey_handler: &Hotkeys)
      -> (Option<StateUpdate>, Option<Vec<StateUpdate>>) {
 
-        if update != StateUpdate::UpdateClient && update != StateUpdate::ChangeSlide(SlideChange::Next) &&
-            update != StateUpdate::ChangeSlide(SlideChange::Previous){
+        if update != StateUpdate::UpdateClient && update != StateUpdate::ChangeSlide(SlideChange::NextApp) &&
+            update != StateUpdate::ChangeSlide(SlideChange::PreviousApp) && update != StateUpdate::ChangeSlide(SlideChange::PreviousHotkey)
+            && update != StateUpdate::ChangeSlide(SlideChange::NextHotkey) {
             self.update(update.clone());
         }
 
@@ -29,12 +30,18 @@ impl MessageHandler for StreamState {
                     self.timer_start = SystemTime::now();
                 }
                 match direction {
-                    SlideChange::Next => {
-                        hotkey_handler.next_slide();
+                    SlideChange::NextHotkey => {
+                        hotkey_handler.next_slide(true);
                     },
-                    SlideChange::Previous => {
-                        hotkey_handler.prev_slide();
-                    }
+                    SlideChange::NextApp => {
+                        hotkey_handler.next_slide(false);
+                    },
+                    SlideChange::PreviousHotkey => {
+                        hotkey_handler.prev_slide(true);
+                    },
+                    SlideChange::PreviousApp => {
+                        hotkey_handler.prev_slide(false);
+                    },
                 }
                 if self.change_scene_on_change_slide_hotkey {
                     let mut instructions = Vec::new();
@@ -75,22 +82,24 @@ impl MessageHandler for StreamState {
             StateUpdate::SubScene(value) => {
                 if value.get_type() == Scenes::Camera {
                     if self.current_scene == Scenes::Camera {
-                        hotkey_handler.change_scene(Scenes::Camera, Some(self.camera_sub_scene));
+                        hotkey_handler.change_scene(Scenes::Camera, Some(value));
                     }
                     self.camera_sub_scene = value;
                     return (Some(update), None)
                 } else if value.get_type() == Scenes::Screen {
                     if self.current_scene == Scenes::Screen{
-                        hotkey_handler.change_scene(Scenes::Screen, Some(self.screen_sub_scene));
+                        hotkey_handler.change_scene(Scenes::Screen, Some(value));
                     }
                     self.screen_sub_scene = value;
                     return (Some(update), None)
                 }
             },
             StateUpdate::Scene(value) => {
-                
+                println!("dong: {:?}", value);
                 if value == Scenes::Screen {
+                    println!("doink: {:?}", self.current_scene);
                     if self.current_scene != Scenes::Screen {
+                        println!("ping");
                         self.timer_start = SystemTime::now();
                         self.timer_finished = false;
                     }
@@ -98,7 +107,6 @@ impl MessageHandler for StreamState {
                     self.timer_finished = true;
                 }
 
-                
                 if self.current_scene != value {
                     match self.current_scene {
                         Scenes::Camera => {
