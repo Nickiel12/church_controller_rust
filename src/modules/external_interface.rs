@@ -29,6 +29,12 @@ pub struct Hotkeys {
 }
 
 impl Hotkeys {
+    pub fn new(hotkeys: serde_json::Value) -> Self {
+        Hotkeys {
+            hotkeys
+        }
+    }
+
     pub fn get_hotkey_from_scene(&self, scene: SubScenes) -> &str {
         match scene {
             SubScenes::CameraDefault => {self.hotkeys["hotkeys"]["obs"]["camera_scene_hotkey"].as_str().unwrap()},
@@ -40,6 +46,7 @@ impl Hotkeys {
             SubScenes::ScreenWithLowerRight => {self.hotkeys["hotkeys"]["obs"]["Screen_Bottom_Right"].as_str().unwrap()},
         }
     }
+    
     pub fn send_obs(&self, hotkey: &str) {
         if cfg!(target_family = "windows") {
             Command::new(String::from(AHK_FILES_FOLDER) + "send_obs_back_to_propre.exe")
