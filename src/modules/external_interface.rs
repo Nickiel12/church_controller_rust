@@ -46,7 +46,7 @@ impl Hotkeys {
             SubScenes::ScreenWithLowerRight => {self.hotkeys["hotkeys"]["obs"]["Screen_Bottom_Right"].as_str().unwrap()},
         }
     }
-    
+
     pub fn send_obs(&self, hotkey: &str) {
         if cfg!(target_family = "windows") {
             Command::new(String::from(AHK_FILES_FOLDER) + "send_obs_back_to_propre.exe")
@@ -108,11 +108,10 @@ impl Hotkeys {
     }
     
     pub fn toggle_computer_sound(&self, value: bool) {
-        let direction: u8 = if value {1} else {0};
         let time_delay = self.hotkeys["general"]["music_fade_time"].as_i64().unwrap();
         if cfg!(target_family = "windows") {
             Command::new(String::from(AHK_FILES_FOLDER) + "music_toggle.exe")
-                .arg(direction.to_string()) 
+                .arg((value as u8).to_string()) 
                 .arg(time_delay.to_string())
                 .spawn()
                 .expect("next_slide process call failed");
