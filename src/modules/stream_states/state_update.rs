@@ -22,9 +22,8 @@ pub enum StateUpdate {
 
 impl StateUpdate {
     pub fn json_to_state_update(incoming_json: Value) -> Self {
-        let message_type = &incoming_json["type"];
 
-        match message_type.as_str().unwrap() {
+        match incoming_json["type"].as_str().unwrap() {
             "update" => {
                 let value = &incoming_json["update"];
                 match value.as_str().unwrap() {
