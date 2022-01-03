@@ -18,34 +18,22 @@ const SERVER_ADDRESS: &str = "10.0.0.209:5000";
 const SERVER_ADDRESS: &str = "10.0.0.168:5000";
 
 fn main() {
-    let settings_json: serde_json::Value;
-    {
-        let mut settings_file = std::fs::File::open(OPTIONS_PATH).unwrap();
-        let mut settings_str = String::new();
-        settings_file.read_to_string(&mut settings_str).unwrap();
-        settings_json = serde_json::from_str(settings_str.as_str()).unwrap();
-        drop(settings_file);
-    }
-    let hotkeys = Hotkeys {
-        hotkeys: settings_json,
-    };
-    let mut state = StreamState::new();
-
-    let (control_c_flag_tx, control_c_called_flag_rx) = sync_flag::new_syncflag(false);
+    let settings_json = load_json();
+    let hotkeys = Hotkeys::new(settings_json);
+    
     let (from_socket_tx, from_socket_rx) = unbounded::<String>();
     let hotkey_channel_tx = from_socket_tx.clone();
     
-    let socket_listener = Socket::make_listener(SERVER_ADDRESS);
-    let mut socket = Socket::handle_connections(socket_listener, from_socket_tx);
-    
+    let mut socket = Socket::handle_connections(Socket::make_listener(SERVER_ADDRESS), from_socket_tx);
     
     let (hotkey_close_flag_tx, hotkey_close_flag_rx) = sync_flag::new_syncflag(true);
-    setup_control_c(control_c_flag_tx, hotkey_close_flag_tx);
-
+    let control_c_called_flag_rx = setup_control_c(hotkey_close_flag_tx);
+    
     let hotkey_handle = thread::spawn(move || {
         modules::external_interface::create_keyboard_hooks(hotkey_channel_tx, hotkey_close_flag_rx);
     });
     
+    let mut state = StreamState::new();
     //until control_c is caught, check the queue of incoming
     //requests from the socket handler.
     while !control_c_called_flag_rx.get() {
@@ -96,12 +84,22 @@ fn handle_instructions(mut instructions: Vec<StateUpdate>, state: &mut StreamSta
     }
 }
 
-fn setup_control_c(mut control_c_flag_tx: sync_flag::SyncFlagTx, mut hotkey_close_flag_tx: sync_flag::SyncFlagTx) {
+fn setup_control_c(mut hotkey_close_flag_tx: sync_flag::SyncFlagTx) -> sync_flag::SyncFlagRx{
+    let (mut control_c_flag_tx, control_c_called_flag_rx) = sync_flag::new_syncflag(false);
     ctrlc::set_handler(move || {
         println!("ctrl c caught");
         control_c_flag_tx.set(true);
         hotkey_close_flag_tx.set(false);
     }).expect("control C handler failed!");
+    control_c_called_flag_rx
+}
+
+fn load_json() -> serde_json::Value {
+        let mut settings_file = std::fs::File::open(OPTIONS_PATH).unwrap();
+        let mut settings_str = String::new();
+        settings_file.read_to_string(&mut settings_str).unwrap();
+        drop(settings_file);
+        serde_json::from_str(settings_str.as_str()).unwrap()
 }
 
 fn update_all(state: &StreamState, socket: &Socket) {
