@@ -63,13 +63,3 @@ pub enum SlideChange {
     Next,
     Previous,
 }
-
-impl SlideChange {
-    pub fn to_string(&self) -> String {
-        match self {
-            SlideChange::Next => {String::from_str("Next_Slide").unwrap()},
-            SlideChange::Previous => {String::from_str("Prev_Slide").unwrap()},
-        }
-    }
-}
-
