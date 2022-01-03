@@ -82,16 +82,29 @@ impl Socket {
 
     pub fn send(&self, message: String) {
         let mut streams = self.socket_txs.lock().unwrap();
+        let mut removes = Vec::<usize>::new();
         if streams.len() == 0 {return}
         for i in 0..streams.len(){
-            let mut tx = streams.get(i).unwrap().as_ref();
-            
-            match tx.write(message.clone().as_bytes()) {
-                Err(_) => {streams.remove(i); println!("removed a socket"); continue;},
-                Ok(_) => {},
+            match streams.get(i) {
+                None => {
+                    removes.push(i);
+                }, 
+                Some(strm) => {
+                    let mut tx = strm.as_ref();
+                    match tx.write(message.clone().as_bytes()) {
+                        Err(_) => {
+                            removes.push(i)
+                        },
+                        Ok(_) => {
+                            tx.write(b"\n").unwrap();
+                            tx.flush().unwrap();
+                        }
+                    }
+                }
             }
-            tx.write(b"\n").unwrap();
-            tx.flush().unwrap();
+        }
+        for i in removes.iter() {
+            streams.remove(*i);
         }
     }
 }
