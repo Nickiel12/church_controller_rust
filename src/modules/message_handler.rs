@@ -6,7 +6,7 @@ pub trait MessageHandler {                              //the first one goes to 
     fn handle_update(&mut self, update: StateUpdate, hotkey_handler: &Hotkeys)
      -> (Option<StateUpdate>, Option<Vec<StateUpdate>>);
     fn get_states(&self) -> StreamState;
-    fn tick(&mut self) -> (Option<StateUpdate>, Option<StateUpdate>);
+    fn tick(&mut self) -> Vec<StateUpdate>;
 }
 
 impl MessageHandler for StreamState {
@@ -126,26 +126,26 @@ impl MessageHandler for StreamState {
         (None, None)
     }
 
-    fn tick(&mut self) -> (Option<StateUpdate>, Option<StateUpdate>) {
+    fn tick(&mut self) -> Vec<StateUpdate> {
+        let mut instructions = Vec::new();
         if self.timer_finished == false && self.timer_can_run == true {
             let change = self.timer_start.elapsed();
             match change {
-                Err(_) => {(None, None)},
+                Err(_) => {},
                 Ok(change) => {
                     if change.as_secs_f32() >= self.timer_length {
                         self.timer_finished = true;
-                        (Some(StateUpdate::TimerText(String::from("0.0"))),
-                        Some(StateUpdate::Scene(Scenes::Camera)))
+                        instructions.push(StateUpdate::TimerText(String::from("0.0")));
+                        instructions.push(StateUpdate::Scene(Scenes::Camera));
                     } else {
-                        (Some(StateUpdate::TimerText(
+                        instructions.push(StateUpdate::TimerText(
                             format!("{:.1}", self.timer_length - ((change.as_secs_f32() * 10.0).round() / 10.0))
-                        )), None)
+                        ));
                     }
                 }
             }
-        } else {
-            (None, None)
         }
+        instructions
     }
 
     fn get_states(&self) -> StreamState{
@@ -160,8 +160,8 @@ fn test_tick_1() {
     state.timer_finished = false;
     state.tick();
     std::thread::sleep(std::time::Duration::from_millis(1000));
-    let update = state.tick();
-    state.update(update.0.unwrap());
+    let mut update = state.tick();
+    state.update(update.pop().unwrap());
     assert_eq!(state.timer_text, "14.0");
 }
 
@@ -171,8 +171,8 @@ fn test_tick_one_half() {
     state.timer_finished = false;
     state.tick();
     std::thread::sleep(std::time::Duration::from_millis(500));
-    let update = state.tick();
-    state.update(update.0.unwrap());
+    let mut update = state.tick();
+    state.update(update.pop().unwrap());
     assert_eq!(state.timer_text, "14.5");
 }
 
@@ -183,7 +183,7 @@ fn test_tick_10() {
     state.timer_finished = false;
     state.tick();
     std::thread::sleep(std::time::Duration::from_millis(10000));
-    let update = state.tick();
-    state.update(update.0.unwrap());
+    let mut update = state.tick();
+    state.update(update.pop().unwrap());
     assert_eq!(state.timer_text, "5.0");
 }
