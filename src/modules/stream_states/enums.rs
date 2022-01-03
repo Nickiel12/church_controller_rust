@@ -60,6 +60,8 @@ impl Scenes {
 
 #[derive(PartialEq, Debug, Clone, Copy)]
 pub enum SlideChange {
-    Next,
-    Previous,
+    NextApp,
+    PreviousApp,
+    NextHotkey,
+    PreviousHotkey,
 }

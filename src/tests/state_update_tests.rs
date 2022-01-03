@@ -86,11 +86,11 @@ fn test_json_to_state_update() {
 
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
         "{\"type\": \"update\", \"update\": \"Next_Slide\"}"
-        ).unwrap()), StateUpdate::ChangeSlide(SlideChange::Next));
+        ).unwrap()), StateUpdate::ChangeSlide(SlideChange::NextHotkey));
 
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
         "{\"type\": \"update\", \"update\": \"Prev_Slide\"}"
-        ).unwrap()), StateUpdate::ChangeSlide(SlideChange::Previous));
+        ).unwrap()), StateUpdate::ChangeSlide(SlideChange::PreviousHotkey));
 
     assert_eq!(StateUpdate::json_to_state_update(serde_json::from_str(
         "{\"type\": \"update\", \"update\":\"all\"}"
@@ -131,8 +131,8 @@ fn test_state_update_to_json() {
     assert_eq!(StateUpdate::SubScene(SubScenes::ScreenWithLowerRight), StateUpdate::json_to_state_update(StateUpdate::SubScene(SubScenes::ScreenWithLowerRight).to_json()));
     assert_eq!(StateUpdate::Scene(Scenes::Camera), StateUpdate::json_to_state_update(StateUpdate::Scene(Scenes::Camera).to_json()));
     assert_eq!(StateUpdate::Scene(Scenes::Screen), StateUpdate::json_to_state_update(StateUpdate::Scene(Scenes::Screen).to_json()));
-    assert_eq!(StateUpdate::ChangeSlide(SlideChange::Next), StateUpdate::json_to_state_update(StateUpdate::ChangeSlide(SlideChange::Next).to_json()));
-    assert_eq!(StateUpdate::ChangeSlide(SlideChange::Previous), StateUpdate::json_to_state_update(StateUpdate::ChangeSlide(SlideChange::Previous).to_json()));
+    assert_eq!(StateUpdate::ChangeSlide(SlideChange::NextHotkey), StateUpdate::json_to_state_update(StateUpdate::ChangeSlide(SlideChange::NextHotkey).to_json()));
+    assert_eq!(StateUpdate::ChangeSlide(SlideChange::PreviousHotkey), StateUpdate::json_to_state_update(StateUpdate::ChangeSlide(SlideChange::PreviousHotkey).to_json()));
     assert_eq!(StateUpdate::UpdateClient, StateUpdate::json_to_state_update(StateUpdate::UpdateClient.to_json()));
 
 }

@@ -8,10 +8,19 @@ SetTitleMatchMode, Fast
 
 If WinExist(A_Args[1]) ; propresenter
 {   ; if propresenter isn't active, switch and send clicker forward
-    if !WinActive(A_Args[1]){
-        WinActivate
-        sleep 200
+    if (A_Args[3]) { ; 1 for from_hotkey 0 for from app
+        if !WinActive(A_Args[1]){
+            WinActivate
+            sleep 200
+            arg := A_Args[2]
+            Send {%arg%}
+        }
+    } else {
+        if !WinActive(A_Args[1]){
+            WinActivate
+            sleep 200
+        }
+        arg := A_Args[2]
+        Send {%arg%}
     }
-    arg := A_Args[2]
-    Send {%arg%}
 }

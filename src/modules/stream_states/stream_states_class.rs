@@ -64,43 +64,12 @@ impl StreamState {
             StateUpdate::TimerCanRun(new_val)  => {self.timer_can_run = new_val;},
             StateUpdate::TimerLength(new_val)   => {self.timer_length  = new_val;},
             StateUpdate::TimerText(new_val)   => {self.timer_text    = new_val;},
-            StateUpdate::Scene(new_val)       => {self.change_scene(&new_val)},
-            StateUpdate::SubScene(new_val)      =>  {self.change_sub_scene(&new_val)},
-            StateUpdate::SceneIsAugmented(new_val) => {
-                self.scene_is_augmented = new_val;
-                self.change_scene(&Scenes::Augmented)},
-                StateUpdate::ComputerMediaDoPause => {},
-                StateUpdate::ChangeSlide(_value) => {panic!("Stream_states_class is not supposed to get this update type");},
-                StateUpdate::UpdateClient => {},
+            StateUpdate::SceneIsAugmented(new_val) => {self.scene_is_augmented = new_val;},
+            StateUpdate::Scene(_) => {},
+            StateUpdate::SubScene(_) => {},
+            StateUpdate::ComputerMediaDoPause => {},
+            StateUpdate::ChangeSlide(_value) => {panic!("Stream_states_class is not supposed to get this update type");},
+            StateUpdate::UpdateClient => {},
         }
-    }
-
-    pub fn change_scene(&mut self, scene: &Scenes) {
-        match scene {
-            Scenes::Augmented => {self.current_scene = *scene;}
-            Scenes::Camera => {self.current_scene = *scene},
-            Scenes::Screen => {self.current_scene = *scene}, 
-        }
-    }
-
-    pub fn change_sub_scene(&mut self, scene: &SubScenes) {
-        match scene {
-            SubScenes::CameraDefault | SubScenes::CameraWithUpperRight | 
-            SubScenes::CameraWithLargeUpperRight | SubScenes::CameraWithLowerRight 
-            => {StreamState::set_camera_scene(self, scene)},
-            SubScenes::ScreenDefault | SubScenes::ScreenWithUpperRight |
-            SubScenes::ScreenWithLowerRight 
-            => {StreamState::set_screen_scene(self, scene)},
-        }
-    }
-
-    fn set_camera_scene(&mut self, scene: &SubScenes) {
-        self.camera_sub_scene = scene.clone();
-        self.current_scene = Scenes::Camera;
-    }
-
-    fn set_screen_scene(&mut self, scene: &SubScenes) {
-        self.screen_sub_scene = scene.clone();
-        self.current_scene = Scenes::Screen;
     }
 }

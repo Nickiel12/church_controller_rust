@@ -72,8 +72,12 @@ impl StateUpdate {
                     
                     "Stream_Running" => {StateUpdate::StreamRunning(incoming_json["data"].as_bool().unwrap())}
 
-                    "Next_Slide" => {StateUpdate::ChangeSlide(SlideChange::Next)},
-                    "Prev_Slide" => {StateUpdate::ChangeSlide(SlideChange::Previous)}
+                    "Next_Slide" => {
+                        if incoming_json["data"] == "hotkey" {StateUpdate::ChangeSlide(SlideChange::NextHotkey)}
+                        else {StateUpdate::ChangeSlide(SlideChange::NextApp)}},
+                    "Prev_Slide" => {
+                        if incoming_json["data"] == "hotkey" {StateUpdate::ChangeSlide(SlideChange::PreviousHotkey)}
+                        else {StateUpdate::ChangeSlide(SlideChange::PreviousApp)}}
                     //Unimplemented
                     _ => {panic!("trying to use a button type I don't know!: {}", value)}
                 }
@@ -110,8 +114,10 @@ impl StateUpdate {
                 ("Toggle_Computer_Volume", "".to_string())},
             StateUpdate::ChangeSlide(value) => {
                 match value {
-                    SlideChange::Next => {("Next_Slide", "".to_string())},
-                    SlideChange::Previous => {("Prev_Slide", "".to_string())},
+                    SlideChange::NextApp => {("Next_Slide", "".to_string())},
+                    SlideChange::NextHotkey => {("Next_Slide", "hotkey".to_string())},
+                    SlideChange::PreviousApp => {("Prev_Slide", "".to_string())},
+                     SlideChange::PreviousHotkey => {("Prev_Slide", "hotkey".to_string())},
                 }
             },
             StateUpdate::UpdateClient => {
