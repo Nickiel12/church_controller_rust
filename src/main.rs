@@ -40,17 +40,12 @@ fn main() {
         match from_socket_rx.recv_timeout(Duration::from_millis(100)) {
             Ok(message) => {
                 println!("main recieved: {}", message);
-                let json = serde_json::from_str(&message).unwrap();
-                let update = StateUpdate::json_to_state_update(json);
+                let update = StateUpdate::json_to_state_update(
+                    serde_json::from_str(&message).unwrap());
                 if update == StateUpdate::UpdateClient {
                     update_all(&state, &socket);
-                }
-                let updates = state.handle_update(update, &hotkeys);
-                if updates.0.is_some() {
-                    socket.send(updates.0.unwrap().to_json().to_string());
-                }
-                if updates.1.is_some() {
-                    handle_instructions(updates.1.unwrap(), &mut state, &socket, &hotkeys);
+                } else {
+                    handle_instructions(vec![update], &mut state, &socket, &hotkeys);
                 }
             },
             Err(_) => {},
