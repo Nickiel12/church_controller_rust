@@ -37,7 +37,7 @@ impl StateUpdate {
                         }
                     }
 
-                    "Scene_Is_Augmented" => {StateUpdate::SceneIsAugmented(string_to_bool(incoming_json["data"].as_str().unwrap()))},
+                    "Scene_Is_Augmented" => {StateUpdate::SceneIsAugmented(incoming_json["data"].as_bool().unwrap())},
 
                     //SubScenes
                     "SubScene" => {
@@ -55,22 +55,22 @@ impl StateUpdate {
                     }
                     
                     //Slide changing behavior
-                    "Timer_Can_Run" => {StateUpdate::TimerCanRun(string_to_bool(incoming_json["data"].as_str().unwrap()))}
-                    "Change_With_Clicker" => {StateUpdate::ChangeSceneOnChangeSlide(string_to_bool(incoming_json["data"].as_str().unwrap()))},
+                    "Timer_Can_Run" => {StateUpdate::TimerCanRun(incoming_json["data"].as_bool().unwrap())}
+                    "Change_With_Clicker" => {StateUpdate::ChangeSceneOnChangeSlide(incoming_json["data"].as_bool().unwrap())},
                     "Timer_Length" => {
                         let new_timer_length = &incoming_json["data"];
                         StateUpdate::TimerLength(new_timer_length.as_str().unwrap().parse::<f32>().unwrap())
                     },
 
                     //Extra Toggles
-                    "Toggle_Computer_Volume" => {StateUpdate::ToggleComputerSoundOn(string_to_bool(incoming_json["data"].as_str().unwrap()))},
-                    "Toggle_Stream_Volume" => {StateUpdate::StreamSoundToggleOn(string_to_bool(incoming_json["data"].as_str().unwrap()))},
+                    "Toggle_Computer_Volume" => {StateUpdate::ToggleComputerSoundOn(incoming_json["data"].as_bool().unwrap())},
+                    "Toggle_Stream_Volume" => {StateUpdate::StreamSoundToggleOn(incoming_json["data"].as_bool().unwrap())},
                     "Media_Pause_Play" => {StateUpdate::ComputerMediaDoPause},
                     "Timer_Text" => {StateUpdate::TimerText(incoming_json["data"].as_str().unwrap().to_string())}
 
                     "all" => {StateUpdate::UpdateClient},
                     
-                    "Stream_Running" => {StateUpdate::StreamRunning(string_to_bool(incoming_json["data"].as_str().unwrap()))}
+                    "Stream_Running" => {StateUpdate::StreamRunning(incoming_json["data"].as_bool().unwrap())}
 
                     "Next_Slide" => {StateUpdate::ChangeSlide(SlideChange::Next)},
                     "Prev_Slide" => {StateUpdate::ChangeSlide(SlideChange::Previous)}
@@ -123,15 +123,5 @@ impl StateUpdate {
         "update": update_type,
         "data": data,
         })
-    }
-}
-
-fn string_to_bool(input: &str) -> bool{
-    if input == "true" {
-        true
-    } else if input == "false" {
-        false
-    } else {
-        panic!("string to bool doesn't recognize the input: {}", input);
     }
 }
