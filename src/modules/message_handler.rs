@@ -25,10 +25,7 @@ impl MessageHandler for StreamState {
 
         match update {
             StateUpdate::ChangeSlide(direction) => {
-                if self.timer_can_run {
-                    self.timer_finished = false;
-                    self.timer_start = SystemTime::now();
-                }
+                
                 match direction {
                     SlideChange::NextHotkey => {
                         hotkey_handler.next_slide(true);
@@ -44,6 +41,10 @@ impl MessageHandler for StreamState {
                     },
                 }
                 if self.change_scene_on_change_slide_hotkey {
+                    if self.timer_can_run {
+                        self.timer_finished = false;
+                        self.timer_start = SystemTime::now();
+                    }
                     let mut instructions = Vec::new();
                     instructions.push(StateUpdate::Scene(Scenes::Screen));
 
