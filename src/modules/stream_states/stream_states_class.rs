@@ -9,7 +9,7 @@ pub struct StreamState {
     pub stream_is_muted: bool,
     pub computer_sound_is_on: bool,
 
-    pub change_scene_on_change_slide_hotkey: bool,
+    pub change_scene_on_slide_hotkey: bool,
     pub scene_is_augmented: bool,
 
     pub timer_can_run: bool,
@@ -32,7 +32,7 @@ impl Default for StreamState {
             stream_is_muted: false,
             computer_sound_is_on: true,
 
-            change_scene_on_change_slide_hotkey: true,
+            change_scene_on_slide_hotkey: true,
             scene_is_augmented: false,
 
             timer_can_run: true,
@@ -60,7 +60,7 @@ impl StreamState {
             StateUpdate::StreamRunning(new_val)     => {self.stream_running  = new_val;},
             StateUpdate::StreamSoundToggleOn(new_val)     => {self.stream_is_muted = new_val;},
             StateUpdate::ToggleComputerSoundOn(new_val) => {self.computer_sound_is_on = new_val;},
-            StateUpdate::ChangeSceneOnChangeSlide(new_val) => {self.change_scene_on_change_slide_hotkey = new_val;},
+            StateUpdate::ChangeSceneOnChangeSlide(new_val) => {self.change_scene_on_slide_hotkey = new_val;},
             StateUpdate::TimerCanRun(new_val)  => {self.timer_can_run = new_val;},
             StateUpdate::TimerLength(new_val)   => {self.timer_length  = new_val;},
             StateUpdate::TimerText(new_val)   => {self.timer_text    = new_val;},

@@ -93,7 +93,7 @@ fn update_all(state: &StreamState, socket: &Socket) {
     socket.send(StateUpdate::StreamRunning(state.stream_running).to_json().to_string());
     socket.send(StateUpdate::StreamSoundToggleOn(state.stream_is_muted).to_json().to_string());
     socket.send(StateUpdate::ToggleComputerSoundOn(state.computer_sound_is_on).to_json().to_string());
-    socket.send(StateUpdate::ChangeSceneOnChangeSlide(state.change_scene_on_change_slide_hotkey).to_json().to_string());
+    socket.send(StateUpdate::ChangeSceneOnChangeSlide(state.change_scene_on_slide_hotkey).to_json().to_string());
     socket.send(StateUpdate::SceneIsAugmented(state.scene_is_augmented).to_json().to_string());
     socket.send(StateUpdate::TimerCanRun(state.timer_can_run).to_json().to_string());
     socket.send(StateUpdate::TimerLength(state.timer_length).to_json().to_string());

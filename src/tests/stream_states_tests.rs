@@ -31,7 +31,7 @@ fn create_stream_states_class() {
     assert_eq!(stream_state.stream_running, false);
     assert_eq!(stream_state.stream_is_muted, false);
     assert_eq!(stream_state.computer_sound_is_on, true);
-    assert_eq!(stream_state.change_scene_on_change_slide_hotkey, true);
+    assert_eq!(stream_state.change_scene_on_slide_hotkey, true);
     assert_eq!(stream_state.scene_is_augmented, false);
 
     assert_eq!(stream_state.timer_text, "0.0");
@@ -119,9 +119,9 @@ fn test_updating() {
     stream_state.update(StateUpdate::ToggleComputerSoundOn(false));
     assert_eq!(stream_state.computer_sound_is_on, false);
 
-    assert_eq!(stream_state.change_scene_on_change_slide_hotkey, true);
+    assert_eq!(stream_state.change_scene_on_slide_hotkey, true);
     stream_state.update(StateUpdate::ChangeSceneOnChangeSlide(false));
-    assert_eq!(stream_state.change_scene_on_change_slide_hotkey, false);
+    assert_eq!(stream_state.change_scene_on_slide_hotkey, false);
 
     assert_eq!(stream_state.scene_is_augmented, false);
     stream_state.update(StateUpdate::SceneIsAugmented(true));

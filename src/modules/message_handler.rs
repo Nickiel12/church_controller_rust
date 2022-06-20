@@ -40,7 +40,8 @@ impl MessageHandler for StreamState {
                         hotkey_handler.prev_slide(false);
                     },
                 }
-                if self.change_scene_on_change_slide_hotkey {
+                
+                if self.change_scene_on_slide_hotkey {
                     if self.timer_can_run {
                         self.timer_finished = false;
                         self.timer_start = SystemTime::now();
@@ -51,7 +52,7 @@ impl MessageHandler for StreamState {
                     return (None, Some(instructions))
                 } else {return (None, None)}
             }
-            StateUpdate::ChangeSceneOnChangeSlide(value) => {self.change_scene_on_change_slide_hotkey = value; return (Some(update), None)},
+            StateUpdate::ChangeSceneOnChangeSlide(value) => {self.change_scene_on_slide_hotkey = value; return (Some(update), None)},
             StateUpdate::SceneIsAugmented(value) => {
                 if value {
                     let mut instructions = Vec::new();
