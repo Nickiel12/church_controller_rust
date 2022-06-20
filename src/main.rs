@@ -62,7 +62,9 @@ fn handle_instructions(mut instructions: Vec<StateUpdate>, state: &mut StreamSta
     for i in instructions.iter_mut() {
         let updates = state.handle_update(i.to_owned(), &hotkeys);
         if updates.0.is_some() {
-            socket.send(updates.0.unwrap().to_json().to_string());
+            let output = updates.0.unwrap().to_json().to_string();
+            println!("sending: {}", output);
+            socket.send(output);
         }
         if updates.1.is_some() {
             handle_instructions(updates.1.unwrap(), state, socket, hotkeys);

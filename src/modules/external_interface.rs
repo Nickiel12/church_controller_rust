@@ -1,8 +1,16 @@
 use std::process::Command;
 use super::stream_states::{state_update::StateUpdate, enums::{SlideChange, SubScenes, Scenes}};
 
+#[cfg(target_os = "windows")]
 const AHK_FILES_FOLDER: &str = ".\\ahk_files\\";
+#[cfg(target_os = "windows")]
 pub const OPTIONS_PATH: &str = ".\\options.json";
+
+
+#[cfg(target_os = "linux")]
+const AHK_FILES_FOLDER: &str = "./ahk_files/";
+#[cfg(target_os = "linux")]
+pub const OPTIONS_PATH: &str = "./options.json";
 
     /*
     const AHK_FILES_FOLDER: &str = "./src/ahk_files/";
@@ -122,18 +130,18 @@ impl Hotkeys {
                 .spawn()
                 .expect("next_slide process call failed");
         } else {
-            println!("pretend linux is sending prosenter next: {}", self.hotkeys["general"]["clicker_backward"].as_str().unwrap())
+            println!("pretend linux is sending media: {}", value)
         };
     }
     
     pub fn toggle_media_play_pause(&self) {
         if cfg!(target_family = "windows") {
-            Command::new(String::from(AHK_FILES_FOLDER) + "music_toggle.exe")
+            Command::new(String::from(AHK_FILES_FOLDER) + "pause_play_global.exe")
                 .arg(self.hotkeys["windows"]["propresenter_re"].as_str().unwrap()) 
                 .spawn()
                 .expect("next_slide process call failed");
         } else {
-            println!("pretend linux is sending prosenter next: {}", self.hotkeys["general"]["clicker_backward"].as_str().unwrap())
+            println!("pretend linux is sending media pause")
         };
     }    
 }

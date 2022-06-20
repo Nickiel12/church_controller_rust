@@ -15,7 +15,7 @@ if WinExist("ahk_exe Dopamine.exe"){
 }
 
 If WinExist(A_Args[1]) ; propresenter
-{   ; if propresenter isn't active, switch and send clicker forward
+{   ; if propresenter isn't active, switch to it
     if !WinActive(A_Args[1]){
         WinActivate
     }

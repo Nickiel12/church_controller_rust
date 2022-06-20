@@ -41,7 +41,7 @@ impl MessageHandler for StreamState {
                     },
                 }
                 
-                if self.change_scene_on_slide_hotkey && !self.current_scene.is_camera() {
+                if self.change_scene_on_slide_hotkey {
                     if self.timer_can_run {
                         self.timer_finished = false;
                         self.timer_start = SystemTime::now();
