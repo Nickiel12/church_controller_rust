@@ -115,7 +115,6 @@ impl MessageHandler for StreamState {
                             hotkey_handler.change_scene(Scenes::Screen, Some(self.screen_sub_scene));
                         },
                         Scenes::Augmented => {
-                            println!("Augment!");
                             hotkey_handler.change_scene(Scenes::Augmented, None);
                         }
                     }
