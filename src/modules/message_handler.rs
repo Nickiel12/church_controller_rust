@@ -41,7 +41,7 @@ impl MessageHandler for StreamState {
                     },
                 }
                 
-                if self.change_scene_on_slide_hotkey {
+                if self.change_scene_on_slide_hotkey && !self.current_scene.is_camera() {
                     if self.timer_can_run {
                         self.timer_finished = false;
                         self.timer_start = SystemTime::now();
@@ -82,14 +82,14 @@ impl MessageHandler for StreamState {
             StateUpdate::TimerLength(value) => {self.timer_length = value; return (Some(update), None)},
             StateUpdate::TimerText(value) => {self.timer_text = value.clone(); return (Some(StateUpdate::TimerText(value)), None)},
             StateUpdate::SubScene(value) => {
-                if value.get_type() == Scenes::Camera {
-                    if self.current_scene == Scenes::Camera {
+                if value.get_type().is_camera() {
+                    if self.current_scene.is_camera() {
                         hotkey_handler.change_scene(Scenes::Camera, Some(value));
                     }
                     self.camera_sub_scene = value;
                     return (Some(update), None)
-                } else if value.get_type() == Scenes::Screen {
-                    if self.current_scene == Scenes::Screen{
+                } else if value.get_type().is_screen() {
+                    if self.current_scene.is_screen() {
                         hotkey_handler.change_scene(Scenes::Screen, Some(value));
                     }
                     self.screen_sub_scene = value;
@@ -97,9 +97,10 @@ impl MessageHandler for StreamState {
                 }
             },
             StateUpdate::Scene(value) => {
-                println!("{:?}", value);
-                if value == Scenes::Screen {
-                    if self.current_scene != Scenes::Screen {
+                println!("handling scene: {:?}", value);
+                
+                if value.is_screen() {
+                    if !self.current_scene.is_screen() {
                         self.timer_start = SystemTime::now();
                         self.timer_finished = false;
                     }
