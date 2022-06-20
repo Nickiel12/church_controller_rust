@@ -56,6 +56,18 @@ impl Scenes {
             Scenes::Augmented => {String::from_str("Augmented").unwrap()},
         }
     }
+    
+    pub fn is_camera(&self) -> bool {
+        match self { Scenes::Camera => true, _ => false }
+    }
+
+    pub fn is_screen(&self) -> bool {
+        match self { Scenes::Screen => true, _ => false }
+    }
+
+    pub fn is_augmeted(&self) -> bool {
+        match self {Scenes::Augmented => true, _ => false }
+    }
 }
 
 #[derive(PartialEq, Debug, Clone, Copy)]
