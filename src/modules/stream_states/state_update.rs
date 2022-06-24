@@ -1,5 +1,5 @@
 
-use super::enums::{SubScenes, Scenes, SlideChange};
+use super::scenes::{SubScenes, Scenes, SlideChange};
 use serde_json::Value;
 
 

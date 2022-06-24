@@ -1,5 +1,5 @@
 use std::process::Command;
-use super::stream_states::{state_update::StateUpdate, enums::{SlideChange, SubScenes, Scenes}};
+use super::stream_states::{state_update::StateUpdate, scenes::{SlideChange, SubScenes, Scenes}};
 
 #[cfg(target_os = "windows")]
 const AHK_FILES_FOLDER: &str = ".\\ahk_files\\";

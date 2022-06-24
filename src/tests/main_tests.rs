@@ -1,6 +1,6 @@
 use workctl::sync_flag;
 
-use crate::modules::{stream_states::{ stream_states_class::StreamState, enums::Scenes, state_update::StateUpdate}};
+use crate::modules::{stream_states::{ stream_states_class::StreamState, scenes::Scenes, state_update::StateUpdate}};
 
 
 #[test]

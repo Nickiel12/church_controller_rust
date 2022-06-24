@@ -1,4 +1,4 @@
-use crate::modules::stream_states::{state_update::StateUpdate, enums::{Scenes, SubScenes, SlideChange}};
+use crate::modules::stream_states::{state_update::StateUpdate, scenes::{Scenes, SubScenes, SlideChange}};
 
 
 

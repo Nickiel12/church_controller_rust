@@ -1,6 +1,6 @@
 use std::time::SystemTime;
 
-use super::enums::{SubScenes, Scenes};
+use super::scenes::{SubScenes, Scenes};
 use super::state_update::StateUpdate;
 
 #[derive(Debug, Clone)]
