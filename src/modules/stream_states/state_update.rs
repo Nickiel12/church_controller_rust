@@ -12,6 +12,7 @@ pub enum StateUpdate {
     ChangeSceneOnChangeSlide(bool),
     SceneIsAugmented(bool),
     TimerCanRun(bool),
+    PauseTimer(bool),
     TimerLength(f32),
     TimerText(String),
     SubScene(SubScenes),
@@ -120,6 +121,8 @@ impl StateUpdate {
                      SlideChange::PreviousHotkey => {("Prev_Slide", "hotkey".to_string())},
                 }
             },
+            StateUpdate::PauseTimer(value) => {
+                ("Pause_Timer", value.to_string())}
             StateUpdate::UpdateClient => {
                 ("all", "".to_string())
             },

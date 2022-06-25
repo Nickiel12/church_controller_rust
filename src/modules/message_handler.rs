@@ -6,6 +6,7 @@ pub trait MessageHandler {                              //the first one goes to 
     fn handle_update(&mut self, update: StateUpdate, hotkey_handler: &Hotkeys)
      -> (Option<StateUpdate>, Option<Vec<StateUpdate>>);
     fn get_states(&self) -> StreamState;
+    fn pause_timer(&mut self, do_pause: bool) -> (Option<StateUpdate>, Option<Vec<StateUpdate>>);
     fn tick(&mut self) -> Vec<StateUpdate>;
 }
 
@@ -79,6 +80,7 @@ impl MessageHandler for StreamState {
                     return (Some(update), None);
                 }
             }
+            StateUpdate::PauseTimer(value) => {return self.pause_timer(value)},
             StateUpdate::TimerLength(value) => {self.timer_length = value; return (Some(update), None)},
             StateUpdate::TimerText(value) => {self.timer_text = value.clone(); return (Some(StateUpdate::TimerText(value)), None)},
             StateUpdate::SubScene(value) => {
@@ -135,11 +137,57 @@ impl MessageHandler for StreamState {
         (None, None)
     }
 
+    fn pause_timer(&mut self, do_pause: bool) -> (Option<StateUpdate>, Option<Vec<StateUpdate>>) {
+        let instruction: StateUpdate;
+        
+        // if do pause, 
+        if do_pause {
+            // stop tick from running,
+            self.timer_can_run = false;
+            
+            // get the amount of time left on the clock
+            let time_left: u16;
+            match self.timer_start.elapsed() {
+                Err(_) => {time_left = 0},
+                Ok(change) => {
+                    // take the duration, multiply it by 10 to save the last decimal,
+                    // then drop the rest of the digits with .round()
+                    time_left = (self.timer_length - (change.as_secs_f32() * 10.0).round()) as u16;
+                }
+            }
+            self.timer_paused_length = Some(time_left);
+            
+            // (Send to socket, process another instruction)
+            // send the pause singal to the socket, and update the timer text (dividing by 10 to return the last digit)
+            return (Some(StateUpdate::PauseTimer(true)), Some(vec![StateUpdate::TimerText(format!("{:.1}", time_left as f32/10.0))]));
+        } else {
+            // if start timer from pause
+            // enable tick()
+            self.timer_can_run = true;
+
+            // Some fancy check to not have to use a match statement. The 'expect' should never be called, worry if it does
+            let timer_paused_length: u16 = self.timer_paused_length.or(Some(0)).expect("timer_paused 'Some' unwrap somehow failed");
+            
+            // update timer_start, taking into account the amount of time already run
+            self.timer_start = SystemTime::now() - 
+                    std::time::Duration::from_millis(
+                        // first get the decimal back from timer_paused_length, get the amount of time already run
+                        // then convert that to milliseconds, then from f32 to u64 
+                        ((self.timer_length - (timer_paused_length as f32 / 10.0)) * 1000.0) as u64);
+                        
+                
+            // Clear the paused time
+            self.timer_paused_length = None;
+
+            instruction = StateUpdate::PauseTimer(false);
+        }
+        return (Some(instruction), None)
+    }
+
     fn tick(&mut self) -> Vec<StateUpdate> {
         let mut instructions = Vec::new();
         if self.timer_finished == false && self.timer_can_run == true {
-            let change = self.timer_start.elapsed();
-            match change {
+            match self.timer_start.elapsed() {
                 Err(_) => {},
                 Ok(change) => {
                     if change.as_secs_f32() >= self.timer_length {
