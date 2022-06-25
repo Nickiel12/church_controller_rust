@@ -27,7 +27,7 @@ fn has_all_enums() {
 
 #[test]
 fn create_stream_states_class() {
-    let stream_state = s_s::stream_states_class::StreamState::new();
+    let stream_state = s_s::stream_state::StreamState::new();
     assert_eq!(stream_state.stream_running, false);
     assert_eq!(stream_state.stream_is_muted, false);
     assert_eq!(stream_state.computer_sound_is_on, true);
@@ -46,7 +46,7 @@ fn create_stream_states_class() {
 
 #[test]
 fn scene_correctness(){
-    let mut stream_state = s_s::stream_states_class::StreamState::new();
+    let mut stream_state = s_s::stream_state::StreamState::new();
     assert_eq!(stream_state.current_scene, s_s::scenes::Scenes::Camera);
     assert_eq!(stream_state.camera_sub_scene, s_s::scenes::SubScenes::CameraDefault);
     assert_eq!(stream_state.screen_sub_scene, s_s::scenes::SubScenes::ScreenDefault);
@@ -93,7 +93,7 @@ fn scene_correctness(){
 
 #[test]
 fn test_updating() {
-    let mut stream_state = s_s::stream_states_class::StreamState::new();
+    let mut stream_state = s_s::stream_state::StreamState::new();
     
     assert_eq!(stream_state.timer_can_run, true);
     stream_state.update(StateUpdate::TimerCanRun(false));
@@ -134,7 +134,7 @@ fn can_run_in_thread() {
     let (tx, rx) = mpsc::channel();
 
     let rx_thread = thread::spawn(move || {
-        let mut stream_state = s_s::stream_states_class::StreamState::new();
+        let mut stream_state = s_s::stream_state::StreamState::new();
         for received in rx {
             assert_eq!(received, StateUpdate::StreamRunning(true));
             stream_state.update(received);

@@ -1,4 +1,4 @@
-use crate::modules::{message_handler::{MessageHandler}, stream_states::{state_update::StateUpdate, stream_states_class::StreamState}, external_interface::Hotkeys};
+use crate::modules::{message_handler::{MessageHandler}, stream_states::{state_update::StateUpdate, stream_state::StreamState}, external_interface::Hotkeys};
 
 
 #[test]

@@ -1,6 +1,6 @@
 use std::time::{SystemTime};
 
-use super::{stream_states::{state_update::StateUpdate, stream_states_class::StreamState, scenes::{SlideChange, Scenes}}, external_interface::{Hotkeys}};
+use super::{stream_states::{state_update::StateUpdate, stream_state::StreamState, scenes::{SlideChange, Scenes}}, external_interface::{Hotkeys}};
 
 pub trait MessageHandler {                              //the first one goes to socket, the second propogates
     fn handle_update(&mut self, update: StateUpdate, hotkey_handler: &Hotkeys)

@@ -1,7 +1,7 @@
 use std::{time::Duration, thread, io::Read};
 use crossbeam_channel::unbounded;
 
-use modules::{socket_handler::Socket, stream_states::stream_states_class::StreamState, message_handler::{MessageHandler}, external_interface::{Hotkeys, OPTIONS_PATH}};
+use modules::{socket_handler::Socket, stream_states::stream_state::StreamState, message_handler::{MessageHandler}, external_interface::{Hotkeys, OPTIONS_PATH}};
 use workctl::sync_flag;
 
 use crate::modules::stream_states::state_update::StateUpdate;

@@ -4,7 +4,7 @@ pub mod socket_handler;
 pub mod external_interface;
 
 pub mod stream_states {
-    pub mod stream_states_class;
+    pub mod stream_state;
     pub mod state_update;
     pub mod scenes;
 }
