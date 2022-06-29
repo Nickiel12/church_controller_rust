@@ -10,7 +10,10 @@ use crate::modules::stream_states::state_update::StateUpdate;
 mod tests;
 mod modules;
 
+#[cfg(target_os = "windows")]
+const SERVER_ADDRESS: &str = "10.0.0.114:5000";
 
+#[cfg(release)]
 #[cfg(target_os = "windows")]
 const SERVER_ADDRESS: &str = "10.0.0.209:5000";
 
@@ -54,6 +57,7 @@ fn main() {
         handle_instructions(tick_update, &mut state, &socket, &hotkeys);
     }
     
+    println!("closing main thread");
     socket.close();
     hotkey_handle.join().unwrap();
 }
