@@ -17,7 +17,7 @@ pub const OPTIONS_PATH: &str = "./options.json";
     pub const OPTIONS_PATH: &str = "./options.json";
     */
 
-#[cfg(feature = "with_hotkeys")]
+#[cfg(feature = "default")]
 pub fn create_keyboard_hooks(channel_tx: crossbeam_channel::Sender<String>, close_flag: workctl::sync_flag::SyncFlagRx) {
     
     let tx_1 = channel_tx.clone();
