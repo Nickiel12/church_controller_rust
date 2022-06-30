@@ -80,6 +80,10 @@ impl StateUpdate {
                         if incoming_json["data"] == "hotkey" {StateUpdate::ChangeSlide(SlideChange::PreviousHotkey)}
                         else {StateUpdate::ChangeSlide(SlideChange::PreviousApp)}}
                     //Unimplemented
+                    "Pause_Timer" => {
+                        if incoming_json["data"] == "true" {StateUpdate::PauseTimer(true)}
+                        else {StateUpdate::PauseTimer(false)}
+                    }
                     _ => {panic!("trying to use a button type I don't know!: {}", value)}
                 }
             },
