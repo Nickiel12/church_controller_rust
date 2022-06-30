@@ -13,4 +13,5 @@ crossbeam-channel = "0.5"
 inputbot = {path = "D:\\Inputbot"}
 
 [features]
+default = []
 no_hotkeys = []
