@@ -109,11 +109,13 @@ impl MessageHandler for StreamState {
                 } else {
                     self.timer_finished = true;
                 }
-
+                
+                let mut instruction = None;
                 if self.current_scene != value {
                     match value {
                         Scenes::Camera => {
                             hotkey_handler.change_scene(Scenes::Camera, Some(self.camera_sub_scene));
+                            instruction = Some(vec![StateUpdate::TimerText("0.0".to_string())])
                         },
                         Scenes::Screen => {
                             hotkey_handler.change_scene(Scenes::Screen, Some(self.screen_sub_scene));
@@ -125,7 +127,7 @@ impl MessageHandler for StreamState {
                 }
                 
                 self.current_scene = value;
-                return (Some(update), None);
+                return (Some(update), instruction);
             },
             StateUpdate::StreamSoundToggleOn(value) => {hotkey_handler.toggle_stream_sound(value); return (Some(update), None)},
             StateUpdate::ToggleComputerSoundOn(value) => {hotkey_handler.toggle_computer_sound(!value); return (Some(StateUpdate::ToggleComputerSoundOn(!value)), None)},
