@@ -70,6 +70,9 @@ impl MessageHandler for StreamState {
                 }
             },
             StateUpdate::TimerCanRun(value) => {
+                if self.timer_paused_length.is_some(){
+                    return (None, Some(vec![StateUpdate::PauseTimer(false)]));
+                }
                 self.timer_can_run = value;
                 self.timer_start = SystemTime::now();
                 if value {
@@ -79,7 +82,7 @@ impl MessageHandler for StreamState {
                 } else {
                     return (Some(update), None);
                 }
-            }
+            },
             StateUpdate::PauseTimer(value) => {return self.pause_timer(value)},
             StateUpdate::TimerLength(value) => {self.timer_length = value; return (Some(update), None)},
             StateUpdate::TimerText(value) => {self.timer_text = value.clone(); return (Some(StateUpdate::TimerText(value)), None)},
@@ -152,9 +155,9 @@ impl MessageHandler for StreamState {
             match self.timer_start.elapsed() {
                 Err(_) => {time_left = 0},
                 Ok(change) => {
-                    // take the duration, multiply it by 10 to save the last decimal,
+                    // take the duration left, multiply it by 10 to save the last decimal,
                     // then drop the rest of the digits with .round()
-                    time_left = (self.timer_length - (change.as_secs_f32() * 10.0).round()) as u16;
+                    time_left = ((self.timer_length - change.as_secs_f32()) * 10.0).round() as u16;
                 }
             }
             self.timer_paused_length = Some(time_left);
