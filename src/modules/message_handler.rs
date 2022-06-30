@@ -73,8 +73,10 @@ impl MessageHandler for StreamState {
                 if self.timer_paused_length.is_some(){
                     return (None, Some(vec![StateUpdate::PauseTimer(false)]));
                 }
+
                 self.timer_can_run = value;
                 self.timer_start = SystemTime::now();
+
                 if value {
                     let mut instruction = Vec::new();
                     instruction.push(StateUpdate::TimerText(String::from("0.0")));
