@@ -107,5 +107,6 @@ fn update_all(state: &StreamState, socket: &Socket) {
     socket.send(StateUpdate::SubScene(state.camera_sub_scene).to_json().to_string());
     socket.send(StateUpdate::SubScene(state.screen_sub_scene).to_json().to_string());
     socket.send(StateUpdate::Scene(state.current_scene).to_json().to_string());
+    socket.send(StateUpdate::PauseTimer(state.timer_paused_length.is_some()).to_json().to_string());
 }
 
