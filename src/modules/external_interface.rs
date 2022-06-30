@@ -17,6 +17,7 @@ pub const OPTIONS_PATH: &str = "./options.json";
     pub const OPTIONS_PATH: &str = "./options.json";
     */
 
+#[cfg(feature = "with_hotkeys")]
 pub fn create_keyboard_hooks(channel_tx: crossbeam_channel::Sender<String>, close_flag: workctl::sync_flag::SyncFlagRx) {
     
     let tx_1 = channel_tx.clone();
@@ -30,6 +31,11 @@ pub fn create_keyboard_hooks(channel_tx: crossbeam_channel::Sender<String>, clos
     });
     
     inputbot::handle_input_events(close_flag);
+}
+
+#[cfg(feature = "no_hotkeys")]
+pub fn create_keyboard_hooks(channel_tx: crossbeam_channel::Sender<String>, close_flag: workctl::sync_flag::SyncFlagRx) {
+    return
 }
 
 pub struct Hotkeys {
