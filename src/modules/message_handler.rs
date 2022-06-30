@@ -105,28 +105,24 @@ impl MessageHandler for StreamState {
             },
             StateUpdate::Scene(value) => {
                 println!("handling scene: {:?}", value);
-                
-                if value.is_screen() {
-                    if !self.current_scene.is_screen() {
-                        self.timer_start = SystemTime::now();
-                        self.timer_finished = false;
-                    }
-                } else {
-                    self.timer_finished = true;
-                }
+
                 
                 let mut instruction = None;
                 if self.current_scene != value {
                     match value {
                         Scenes::Camera => {
                             hotkey_handler.change_scene(Scenes::Camera, Some(self.camera_sub_scene));
-                            instruction = Some(vec![StateUpdate::TimerText("0.0".to_string())])
+                            instruction = Some(vec![StateUpdate::TimerText("0.0".to_string())]);
+                            self.timer_finished = true;
                         },
                         Scenes::Screen => {
                             hotkey_handler.change_scene(Scenes::Screen, Some(self.screen_sub_scene));
+                            self.timer_start = SystemTime::now();
+                            self.timer_finished = false;
                         },
                         Scenes::Augmented => {
                             hotkey_handler.change_scene(Scenes::Augmented, None);
+                            self.timer_finished = true;
                         }
                     }
                 }
