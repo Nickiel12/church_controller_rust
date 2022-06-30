@@ -105,25 +105,34 @@ impl MessageHandler for StreamState {
             },
             StateUpdate::Scene(value) => {
                 println!("handling scene: {:?}", value);
-
                 
                 let mut instruction = None;
                 if self.current_scene != value {
                     match value {
                         Scenes::Camera => {
                             hotkey_handler.change_scene(Scenes::Camera, Some(self.camera_sub_scene));
-                            instruction = Some(vec![StateUpdate::TimerText("0.0".to_string())]);
+                            if self.timer_paused_length.is_none() {
+                                instruction = Some(vec![StateUpdate::TimerText("0.0".to_string())]);
+                            }
                             self.timer_finished = true;
                         },
                         Scenes::Screen => {
                             hotkey_handler.change_scene(Scenes::Screen, Some(self.screen_sub_scene));
                             self.timer_start = SystemTime::now();
                             self.timer_finished = false;
+                            
                         },
                         Scenes::Augmented => {
                             hotkey_handler.change_scene(Scenes::Augmented, None);
                             self.timer_finished = true;
                         }
+                    }
+                }
+                // if the current scene was tapped again 
+                else {
+                    // current scene can only be the same as value, and timer is paused
+                    if value.is_screen() && self.timer_paused_length.is_some() {
+                        instruction = Some(vec![StateUpdate::PauseTimer(false)]);
                     }
                 }
                 
@@ -141,10 +150,17 @@ impl MessageHandler for StreamState {
     }
 
     fn pause_timer(&mut self, do_pause: bool) -> (Option<StateUpdate>, Option<Vec<StateUpdate>>) {
-        let instruction: StateUpdate;
+        let output: StateUpdate;
+        let mut instruction: Option<Vec<StateUpdate>> = None;
         
         // if do pause, 
         if do_pause {
+
+            // if camera scene, don't allow it!
+            if self.current_scene.is_camera() {
+                return (None, None)
+            }
+
             // stop tick from running,
             self.timer_can_run = false;
             
@@ -171,20 +187,24 @@ impl MessageHandler for StreamState {
             // Some fancy check to not have to use a match statement. The 'expect' should never be called, worry if it does
             let timer_paused_length: u16 = self.timer_paused_length.or(Some(0)).expect("timer_paused 'Some' unwrap somehow failed");
             
-            // update timer_start, taking into account the amount of time already run
-            self.timer_start = SystemTime::now() - 
-                    std::time::Duration::from_millis(
-                        // first get the decimal back from timer_paused_length, get the amount of time already run
-                        // then convert that to milliseconds, then from f32 to u64 
-                        ((self.timer_length - (timer_paused_length as f32 / 10.0)) * 1000.0) as u64);
-                        
-                
+            // if camera scene, don't reset the time_start
+            if self.current_scene.is_camera() {
+                instruction = Some(vec![StateUpdate::TimerText("0.0".to_string())]);
+                self.timer_start += std::time::Duration::from_secs(self.timer_length as u64);
+            } else {
+                // update timer_start, taking into account the amount of time already run
+                self.timer_start = SystemTime::now() - 
+                        std::time::Duration::from_millis(
+                            // first get the decimal back from timer_paused_length, get the amount of time already run
+                            // then convert that to milliseconds, then from f32 to u64 
+                            ((self.timer_length - (timer_paused_length as f32 / 10.0)) * 1000.0) as u64);
+            }
             // Clear the paused time
             self.timer_paused_length = None;
 
-            instruction = StateUpdate::PauseTimer(false);
+            output = StateUpdate::PauseTimer(false);
         }
-        return (Some(instruction), None)
+        return (Some(output), instruction)
     }
 
     fn tick(&mut self) -> Vec<StateUpdate> {
