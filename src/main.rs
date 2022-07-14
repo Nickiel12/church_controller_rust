@@ -6,6 +6,9 @@ use workctl::sync_flag;
 
 use crate::modules::stream_states::state_update::StateUpdate;
 
+#[cfg(target_os = "windows")]
+use modules::tray_icon;
+
 #[cfg(test)]
 mod tests;
 mod modules;
@@ -21,6 +24,10 @@ const SERVER_ADDRESS: &str = "10.0.0.209:5000";
 const SERVER_ADDRESS: &str = "10.0.0.168:5000";
 
 fn main() {
+    
+    let icon = include_bytes!("icon1.ico");
+    let mut tray_icon = tray_icon::TrayIcon::setup(icon);
+
     let settings_json = load_json();
     let hotkeys = Hotkeys::new(settings_json);
     
@@ -53,8 +60,11 @@ fn main() {
             },
             Err(_) => {},
         }
+
         let tick_update = state.tick();
         handle_instructions(tick_update, &mut state, &socket, &hotkeys);
+
+        tray_icon.process_tray_messages();
     }
     
     println!("closing main thread");
@@ -109,4 +119,3 @@ fn update_all(state: &StreamState, socket: &Socket) {
     socket.send(StateUpdate::Scene(state.current_scene).to_json().to_string());
     socket.send(StateUpdate::PauseTimer(state.timer_paused_length.is_some()).to_json().to_string());
 }
-
