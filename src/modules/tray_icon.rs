@@ -1,7 +1,9 @@
 use core::mem::MaybeUninit;
 use std::time::Duration;
+use crossbeam_channel::Receiver;
 use trayicon::*;
 use winapi::um::winuser;
+use workctl::sync_flag::SyncFlagRx;
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 pub enum Events {
@@ -71,7 +73,7 @@ impl TrayIcon {
         }
     }
 
-    pub fn process_tray_messages(&self) {
+    pub fn check_tray_icon_messages(&self) {
         unsafe {
             let mut msg = MaybeUninit::uninit();
             let bret = winuser::PeekMessageA(msg.as_mut_ptr(), 0 as _, 0, 0, 1);
@@ -85,8 +87,8 @@ impl TrayIcon {
         }
     }
 
-    pub fn check_tray_messages(&self) {
-        let message = self.message_channel.recv_timeout(Duration::from_millis(10));
+    pub fn handle_tray_messages(message_channel: &Receiver<Events>) {
+        let message = message_channel.recv_timeout(Duration::from_millis(10));
         match message {
             Err(_) => return,
             Ok(message) => {

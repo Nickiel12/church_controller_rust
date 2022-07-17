@@ -1,4 +1,5 @@
 use crossbeam_channel::unbounded;
+use tray_icon::TrayIcon;
 use std::{io::Read, thread, time::Duration};
 
 use modules::{
@@ -73,12 +74,12 @@ fn main() {
 
             let tick_update = state.tick();
             handle_instructions(tick_update, &mut state, &socket, &hotkeys);
-            println!("{:?}", messages.recv());
+            TrayIcon::handle_tray_messages(&messages);
         }
         socket.close();
     });
     while !stop_flag.get() {
-        tray_icon.process_tray_messages();
+        tray_icon.check_tray_icon_messages();
         //tray_icon.check_tray_messages();
     }
 
