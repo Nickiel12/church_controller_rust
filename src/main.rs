@@ -40,7 +40,9 @@ fn main() {
     let control_c_called_flag_rx = setup_control_c(hotkey_close_flag_tx);
     
     let hotkey_handle = thread::spawn(move || {
+        println!("starting hotkey thread");
         modules::external_interface::create_keyboard_hooks(hotkey_channel_tx, hotkey_close_flag_rx);
+        println!("closing hotkey thread");
     });
     
     let mut state = StreamState::new();
