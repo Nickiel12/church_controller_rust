@@ -14,7 +14,7 @@ mod tests;
 mod modules;
 
 #[cfg(target_os = "windows")]
-const SERVER_ADDRESS: &str = "10.0.0.114:5000";
+const SERVER_ADDRESS: &str = "localhost:5000";
 
 #[cfg(release)]
 #[cfg(target_os = "windows")]
