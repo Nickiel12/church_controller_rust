@@ -76,7 +76,7 @@ impl TrayIcon {
     pub fn process_tray_messages(&self) {
         unsafe {
             let mut msg = MaybeUninit::uninit();
-            let bret = winuser::GetMessageA(msg.as_mut_ptr(), 0 as _, 0, 0);
+            let bret = winuser::PeekMessageA(msg.as_mut_ptr(), 0 as _, 0, 0, 1);
 
             if bret > 0 {
                 winuser::TranslateMessage(msg.as_ptr());
