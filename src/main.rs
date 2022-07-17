@@ -31,7 +31,7 @@ const SERVER_ADDRESS: &str = "10.0.0.168:5000";
 
 fn main() {
     let icon = include_bytes!("icon1.ico");
-    let mut tray_icon = tray_icon::TrayIcon::setup(icon);
+    let tray_icon = tray_icon::TrayIcon::setup(icon);
 
     let settings_json = load_json();
     let hotkeys = Hotkeys::new(settings_json);
@@ -42,12 +42,11 @@ fn main() {
     let mut socket =
         Socket::handle_connections(Socket::make_listener(SERVER_ADDRESS), from_socket_tx);
 
-    let (hotkey_close_flag_tx, hotkey_close_flag_rx) = sync_flag::new_syncflag(true);
-    let control_c_called_flag_rx = setup_control_c(hotkey_close_flag_tx);
+    let control_c_called_flag_rx = setup_control_c();
 
     let hotkey_handle = thread::spawn(move || {
         println!("starting hotkey thread");
-        modules::external_interface::create_keyboard_hooks(hotkey_channel_tx, hotkey_close_flag_rx);
+        modules::external_interface::create_keyboard_hooks(hotkey_channel_tx);
         println!("closing hotkey thread");
     });
 
@@ -106,12 +105,11 @@ fn handle_instructions(
     }
 }
 
-fn setup_control_c(mut hotkey_close_flag_tx: sync_flag::SyncFlagTx) -> sync_flag::SyncFlagRx {
+fn setup_control_c() -> sync_flag::SyncFlagRx {
     let (mut control_c_flag_tx, control_c_called_flag_rx) = sync_flag::new_syncflag(false);
     ctrlc::set_handler(move || {
         println!("ctrl c caught");
         control_c_flag_tx.set(true);
-        hotkey_close_flag_tx.set(false);
     })
     .expect("control C handler failed!");
     control_c_called_flag_rx

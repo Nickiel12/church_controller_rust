@@ -21,7 +21,6 @@ pub const OPTIONS_PATH: &str = "./options.json";
 
 pub fn create_keyboard_hooks(
     channel_tx: crossbeam_channel::Sender<String>,
-    close_flag: workctl::sync_flag::SyncFlagRx,
 ) {
     let tx_1 = channel_tx.clone();
     inputbot::KeybdKey::PageUpKey.bind(move || {
@@ -44,7 +43,7 @@ pub fn create_keyboard_hooks(
     });
 
     #[cfg(feature = "default")]
-    inputbot::handle_input_events(close_flag);
+    inputbot::handle_input_events();
 }
 
 #[cfg(feature = "no_hotkeys")]
