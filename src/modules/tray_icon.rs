@@ -20,7 +20,7 @@ pub enum Events {
 
 pub struct TrayIcon {
     tray_icon: trayicon::TrayIcon<Events>,
-    message_channel: crossbeam_channel::Receiver<Events>,
+    pub message_channel: crossbeam_channel::Receiver<Events>,
 }
 
 impl TrayIcon {
@@ -35,7 +35,7 @@ impl TrayIcon {
         let first_icon = Icon::from_buffer(icon1, None, None).unwrap();
 
         // Needlessly complicated tray icon with all the whistles and bells
-        let mut tray_icon = TrayIconBuilder::new()
+        let tray_icon = TrayIconBuilder::new()
             .sender_crossbeam(s)
             .icon_from_buffer(icon1)
             .tooltip("Cool Tray 👀 Icon")
@@ -76,7 +76,7 @@ impl TrayIcon {
     pub fn process_tray_messages(&self) {
         unsafe {
             let mut msg = MaybeUninit::uninit();
-            let bret = winuser::PeekMessageW(msg.as_mut_ptr(), 0 as _, 0, 0, 1);
+            let bret = winuser::GetMessageA(msg.as_mut_ptr(), 0 as _, 0, 0);
 
             if bret > 0 {
                 winuser::TranslateMessage(msg.as_ptr());
@@ -85,6 +85,9 @@ impl TrayIcon {
                 return;
             }
         }
+    }
+
+    pub fn check_tray_messages(&self){
 
         let message = self.message_channel.recv_timeout(Duration::from_millis(10));
         match message {

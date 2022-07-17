@@ -48,29 +48,36 @@ fn main() {
     let mut state = StreamState::new();
     //until control_c is caught, check the queue of incoming
     //requests from the socket handler.
-    while !control_c_called_flag_rx.get() {
-        match from_socket_rx.recv_timeout(Duration::from_millis(100)) {
-            Ok(message) => {
-                println!("main recieved: {}", message);
-                let update = StateUpdate::json_to_state_update(
-                    serde_json::from_str(&message).unwrap());
-                if update == StateUpdate::UpdateClient {
-                    update_all(&state, &socket);
-                } else {
-                    handle_instructions(vec![update], &mut state, &socket, &hotkeys);
-                }
-            },
-            Err(_) => {},
+    let stop_flag = control_c_called_flag_rx.clone();
+    let messages = tray_icon.message_channel.clone();
+    std::thread::spawn(move || {
+        while !control_c_called_flag_rx.get() {
+            match from_socket_rx.recv_timeout(Duration::from_millis(100)) {
+                Ok(message) => {
+                    println!("main recieved: {}", message);
+                    let update = StateUpdate::json_to_state_update(
+                        serde_json::from_str(&message).unwrap());
+                    if update == StateUpdate::UpdateClient {
+                        update_all(&state, &socket);
+                    } else {
+                        handle_instructions(vec![update], &mut state, &socket, &hotkeys);
+                    }
+                },
+                Err(_) => {},
+            }
+
+            let tick_update = state.tick();
+            handle_instructions(tick_update, &mut state, &socket, &hotkeys);
+            println!("{:?}", messages.recv());
         }
-
-        let tick_update = state.tick();
-        handle_instructions(tick_update, &mut state, &socket, &hotkeys);
-
+        socket.close();
+    });
+    while !stop_flag.get() {
         tray_icon.process_tray_messages();
+        //tray_icon.check_tray_messages();
     }
     
     println!("closing main thread");
-    socket.close();
     hotkey_handle.join().unwrap();
 }
 
