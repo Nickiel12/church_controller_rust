@@ -1,7 +1,8 @@
 use workctl::sync_flag;
 
-use crate::modules::{stream_states::{ stream_state::StreamState, scenes::Scenes, state_update::StateUpdate}};
-
+use crate::modules::stream_states::{
+    scenes::Scenes, state_update::StateUpdate, stream_state::StreamState,
+};
 
 #[test]
 fn it_works() {
@@ -15,7 +16,6 @@ fn can_make_ctrl_c_handler() {
     crate::setup_control_c(control_c_flag_tx);
     drop(_control_c_called_flag_rx);
 }
-
 
 #[test]
 fn test_updating_state_from_state_update() {

@@ -39,62 +39,124 @@ fn create_stream_states_class() {
     assert_eq!(stream_state.timer_can_run, true);
 
     assert_eq!(stream_state.current_scene, s_s::scenes::Scenes::Camera);
-    assert_eq!(stream_state.camera_sub_scene, s_s::scenes::SubScenes::CameraDefault);
-    assert_eq!(stream_state.screen_sub_scene, s_s::scenes::SubScenes::ScreenDefault);
-
+    assert_eq!(
+        stream_state.camera_sub_scene,
+        s_s::scenes::SubScenes::CameraDefault
+    );
+    assert_eq!(
+        stream_state.screen_sub_scene,
+        s_s::scenes::SubScenes::ScreenDefault
+    );
 }
 
 #[test]
-fn scene_correctness(){
+fn scene_correctness() {
     let mut stream_state = s_s::stream_state::StreamState::new();
     assert_eq!(stream_state.current_scene, s_s::scenes::Scenes::Camera);
-    assert_eq!(stream_state.camera_sub_scene, s_s::scenes::SubScenes::CameraDefault);
-    assert_eq!(stream_state.screen_sub_scene, s_s::scenes::SubScenes::ScreenDefault);
+    assert_eq!(
+        stream_state.camera_sub_scene,
+        s_s::scenes::SubScenes::CameraDefault
+    );
+    assert_eq!(
+        stream_state.screen_sub_scene,
+        s_s::scenes::SubScenes::ScreenDefault
+    );
 
-    stream_state.update(StateUpdate::SubScene(s_s::scenes::SubScenes::CameraWithUpperRight));
+    stream_state.update(StateUpdate::SubScene(
+        s_s::scenes::SubScenes::CameraWithUpperRight,
+    ));
 
-    assert_eq!(stream_state.camera_sub_scene, s_s::scenes::SubScenes::CameraWithUpperRight);
-    assert_eq!(stream_state.screen_sub_scene, s_s::scenes::SubScenes::ScreenDefault);
+    assert_eq!(
+        stream_state.camera_sub_scene,
+        s_s::scenes::SubScenes::CameraWithUpperRight
+    );
+    assert_eq!(
+        stream_state.screen_sub_scene,
+        s_s::scenes::SubScenes::ScreenDefault
+    );
 
-    stream_state.update(StateUpdate::SubScene(s_s::scenes::SubScenes::CameraWithLargeUpperRight));
+    stream_state.update(StateUpdate::SubScene(
+        s_s::scenes::SubScenes::CameraWithLargeUpperRight,
+    ));
 
-    assert_eq!(stream_state.camera_sub_scene, s_s::scenes::SubScenes::CameraWithLargeUpperRight);
-    assert_eq!(stream_state.screen_sub_scene, s_s::scenes::SubScenes::ScreenDefault);
+    assert_eq!(
+        stream_state.camera_sub_scene,
+        s_s::scenes::SubScenes::CameraWithLargeUpperRight
+    );
+    assert_eq!(
+        stream_state.screen_sub_scene,
+        s_s::scenes::SubScenes::ScreenDefault
+    );
 
-    stream_state.update(StateUpdate::SubScene(s_s::scenes::SubScenes::CameraWithLowerRight));
+    stream_state.update(StateUpdate::SubScene(
+        s_s::scenes::SubScenes::CameraWithLowerRight,
+    ));
 
-    assert_eq!(stream_state.camera_sub_scene, s_s::scenes::SubScenes::CameraWithLowerRight);
-    assert_eq!(stream_state.screen_sub_scene, s_s::scenes::SubScenes::ScreenDefault);
+    assert_eq!(
+        stream_state.camera_sub_scene,
+        s_s::scenes::SubScenes::CameraWithLowerRight
+    );
+    assert_eq!(
+        stream_state.screen_sub_scene,
+        s_s::scenes::SubScenes::ScreenDefault
+    );
 
     stream_state.update(StateUpdate::SubScene(s_s::scenes::SubScenes::ScreenDefault));
     stream_state.update(StateUpdate::Scene(s_s::scenes::Scenes::Screen));
-    
+
     assert_eq!(stream_state.current_scene, s_s::scenes::Scenes::Screen);
-    assert_eq!(stream_state.screen_sub_scene, s_s::scenes::SubScenes::ScreenDefault);
-    assert_eq!(stream_state.camera_sub_scene, s_s::scenes::SubScenes::CameraWithLowerRight);
+    assert_eq!(
+        stream_state.screen_sub_scene,
+        s_s::scenes::SubScenes::ScreenDefault
+    );
+    assert_eq!(
+        stream_state.camera_sub_scene,
+        s_s::scenes::SubScenes::CameraWithLowerRight
+    );
 
-    stream_state.update(StateUpdate::SubScene(s_s::scenes::SubScenes::ScreenWithLowerRight));
-    
-    assert_eq!(stream_state.screen_sub_scene, s_s::scenes::SubScenes::ScreenWithLowerRight);
-    assert_eq!(stream_state.camera_sub_scene, s_s::scenes::SubScenes::CameraWithLowerRight);
+    stream_state.update(StateUpdate::SubScene(
+        s_s::scenes::SubScenes::ScreenWithLowerRight,
+    ));
 
-    stream_state.update(StateUpdate::SubScene(s_s::scenes::SubScenes::ScreenWithUpperRight));
-    
-    assert_eq!(stream_state.screen_sub_scene, s_s::scenes::SubScenes::ScreenWithUpperRight);
-    assert_eq!(stream_state.camera_sub_scene, s_s::scenes::SubScenes::CameraWithLowerRight);
+    assert_eq!(
+        stream_state.screen_sub_scene,
+        s_s::scenes::SubScenes::ScreenWithLowerRight
+    );
+    assert_eq!(
+        stream_state.camera_sub_scene,
+        s_s::scenes::SubScenes::CameraWithLowerRight
+    );
+
+    stream_state.update(StateUpdate::SubScene(
+        s_s::scenes::SubScenes::ScreenWithUpperRight,
+    ));
+
+    assert_eq!(
+        stream_state.screen_sub_scene,
+        s_s::scenes::SubScenes::ScreenWithUpperRight
+    );
+    assert_eq!(
+        stream_state.camera_sub_scene,
+        s_s::scenes::SubScenes::CameraWithLowerRight
+    );
 
     stream_state.update(StateUpdate::Scene(s_s::scenes::Scenes::Augmented));
 
     assert_eq!(stream_state.current_scene, s_s::scenes::Scenes::Augmented);
-    assert_eq!(stream_state.screen_sub_scene, s_s::scenes::SubScenes::ScreenWithUpperRight);
-    assert_eq!(stream_state.camera_sub_scene, s_s::scenes::SubScenes::CameraWithLowerRight);
-
+    assert_eq!(
+        stream_state.screen_sub_scene,
+        s_s::scenes::SubScenes::ScreenWithUpperRight
+    );
+    assert_eq!(
+        stream_state.camera_sub_scene,
+        s_s::scenes::SubScenes::CameraWithLowerRight
+    );
 }
 
 #[test]
 fn test_updating() {
     let mut stream_state = s_s::stream_state::StreamState::new();
-    
+
     assert_eq!(stream_state.timer_can_run, true);
     stream_state.update(StateUpdate::TimerCanRun(false));
     assert_eq!(stream_state.timer_can_run, false);
@@ -127,7 +189,6 @@ fn test_updating() {
     stream_state.update(StateUpdate::SceneIsAugmented(true));
     assert_eq!(stream_state.scene_is_augmented, true);
 }
-
 
 #[test]
 fn can_run_in_thread() {

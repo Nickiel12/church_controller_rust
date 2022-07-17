@@ -1,12 +1,12 @@
 use crossbeam_channel::unbounded;
-use std::io::{Write};
+use std::io::Write;
 use std::thread;
 use std::time::Duration;
 
 use crate::modules::socket_handler::Socket;
 
 #[test]
-fn can_make_socket_listener(){
+fn can_make_socket_listener() {
     let listener = Socket::make_listener("localhost:5001");
     drop(listener);
 }
@@ -45,7 +45,7 @@ fn can_handle_messages() {
 
     let message = rx_1.recv().unwrap();
     assert_eq!(message, String::from("this is a test"));
-    
+
     socket.close();
 }
 
@@ -66,11 +66,10 @@ fn can_handle_delayed_messages() {
     let message = rx_1.recv().unwrap();
     println!("{}", message);
     assert_eq!(message, String::from("this is a test1\n"));
-    
+
     let message = rx_1.recv().unwrap();
     println!("{}", message);
     assert_eq!(message, String::from("this is a test3\n"));
-    
+
     socket.close();
 }
-

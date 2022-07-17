@@ -1,19 +1,18 @@
-use workctl::sync_flag;
-use std::net::{TcpListener, TcpStream, Shutdown};
+use crossbeam_channel::Sender;
 use std::io::{Read, Write};
-use std::sync::{Mutex, Arc};
-use crossbeam_channel::{Sender};
+use std::net::{Shutdown, TcpListener, TcpStream};
+use std::sync::{Arc, Mutex};
 use std::thread::{self, JoinHandle};
 use std::time::Duration;
+use workctl::sync_flag;
 
-pub struct Socket{
+pub struct Socket {
     socket_txs: Arc<Mutex<Vec<Arc<TcpStream>>>>,
     stop_listener_flag: sync_flag::SyncFlagTx,
     handle_connections_join_handle: Option<JoinHandle<()>>,
 }
 
 impl Socket {
-
     pub fn make_listener(address: &str) -> TcpListener {
         TcpListener::bind(address).unwrap()
     }
@@ -61,7 +60,9 @@ impl Socket {
                 if msg_len == 0 {
                     remove.push(i);
                 } else {
-                    update_tx.send(String::from_utf8_lossy(&buffer[0..msg_len]).into_owned()).unwrap();
+                    update_tx
+                        .send(String::from_utf8_lossy(&buffer[0..msg_len]).into_owned())
+                        .unwrap();
                 }
             }
         }
@@ -69,31 +70,32 @@ impl Socket {
             streams.get(*i).unwrap().shutdown(Shutdown::Both).unwrap();
             streams.remove(*i);
         }
-
     }
 
     pub fn close(&mut self) {
         self.stop_listener_flag.set(false);
         self.handle_connections_join_handle
-            .take().expect("Called on not running thread")
-            .join().expect("Could not join thread");
+            .take()
+            .expect("Called on not running thread")
+            .join()
+            .expect("Could not join thread");
     }
 
     pub fn send(&self, message: String) {
         let mut streams = self.socket_txs.lock().unwrap();
         let mut removes = Vec::<usize>::new();
-        if streams.len() == 0 {return}
-        for i in 0..streams.len(){
+        if streams.len() == 0 {
+            return;
+        }
+        for i in 0..streams.len() {
             match streams.get(i) {
                 None => {
                     removes.push(i);
-                }, 
+                }
                 Some(strm) => {
                     let mut tx = strm.as_ref();
                     match tx.write(message.clone().as_bytes()) {
-                        Err(_) => {
-                            removes.push(i)
-                        },
+                        Err(_) => removes.push(i),
                         Ok(_) => {
                             tx.write(b"\n").unwrap();
                             tx.flush().unwrap();

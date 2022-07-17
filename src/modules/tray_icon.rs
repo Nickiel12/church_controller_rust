@@ -24,9 +24,7 @@ pub struct TrayIcon {
 }
 
 impl TrayIcon {
-
     pub fn setup(icon: &[u8]) -> TrayIcon {
-
         let (s, r) = crossbeam_channel::unbounded();
         let icon1 = include_bytes!("./../icon1.ico");
         let icon2 = include_bytes!("./../icon2.ico");
@@ -66,7 +64,7 @@ impl TrayIcon {
             )
             .build()
             .unwrap();
-        
+
         TrayIcon {
             tray_icon,
             message_channel: r,
@@ -87,8 +85,7 @@ impl TrayIcon {
         }
     }
 
-    pub fn check_tray_messages(&self){
-
+    pub fn check_tray_messages(&self) {
         let message = self.message_channel.recv_timeout(Duration::from_millis(10));
         match message {
             Err(_) => return,
@@ -115,12 +112,12 @@ impl TrayIcon {
                     Events::Item3 => {
                         println!("item3");
                         /*tray_icon
-                            .set_menu(
-                                &MenuBuilder::new()
-                                    .item("New menu item", Events::Item1)
-                                    .item("Exit", Events::Exit),
-                            )
-                            .unwrap();*/
+                        .set_menu(
+                            &MenuBuilder::new()
+                                .item("New menu item", Events::Item1)
+                                .item("Exit", Events::Exit),
+                        )
+                        .unwrap();*/
                     }
                     e => {
                         println!("{:?}", e);
@@ -129,5 +126,4 @@ impl TrayIcon {
             }
         }
     }
-
 }
