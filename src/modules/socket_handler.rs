@@ -24,6 +24,7 @@ impl Socket {
 
         let thread_owned_streams = Arc::clone(&socket_streams);
 
+        println!("initializing socket connection handling thread");
         let handle = thread::spawn(move || {
             listener.set_nonblocking(true).unwrap();
             let mut service_sockets: Vec<Arc<TcpStream>> = Vec::new();
@@ -39,7 +40,7 @@ impl Socket {
                 Socket::service_clients(&mut service_sockets, messenger_tx.clone());
                 thread::sleep(Duration::from_millis(100));
             }
-            println!("closed socket loop");
+            println!("closed socket connection handling thread");
             drop(listener);
         });
 
