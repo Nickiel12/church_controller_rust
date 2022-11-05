@@ -18,7 +18,8 @@
     "windows":{
         "obs_re": "OBS *",
         "propresenter_re": "ProPresenter - .*",
-        "chrome_re": ".* - Google Chrome"
+        "chrome_re": ".* - Google Chrome",
+        "tcp_port": "8005"
     },
     "hotkeys":{
         "obs":{

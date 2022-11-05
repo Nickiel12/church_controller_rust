@@ -30,7 +30,7 @@ pub fn create_keyboard_hooks(channel_tx: crossbeam_channel::Sender<String>, clos
         tx_2.send(StateUpdate::ChangeSlide(SlideChange::NextHotkey).to_json().to_string()).unwrap();
     });
     
-    inputbot::handle_input_events(close_flag);
+    inputbot::handle_input_events();
 }
 
 #[cfg(feature = "no_hotkeys")]

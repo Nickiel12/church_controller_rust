@@ -10,24 +10,17 @@ use crate::modules::stream_states::state_update::StateUpdate;
 mod tests;
 mod modules;
 
-#[cfg(target_os = "windows")]
-const SERVER_ADDRESS: &str = "10.0.0.114:5000";
-
-#[cfg(release)]
-#[cfg(target_os = "windows")]
-const SERVER_ADDRESS: &str = "10.0.0.209:5000";
-
-#[cfg(target_os = "linux")]
-const SERVER_ADDRESS: &str = "10.0.0.168:5000";
+const SERVER_ADDRESS: &str = "0.0.0.0:";
 
 fn main() {
     let settings_json = load_json();
-    let hotkeys = Hotkeys::new(settings_json);
+    let hotkeys = Hotkeys::new(settings_json.clone());
     
     let (from_socket_tx, from_socket_rx) = unbounded::<String>();
     let hotkey_channel_tx = from_socket_tx.clone();
     
-    let mut socket = Socket::handle_connections(Socket::make_listener(SERVER_ADDRESS), from_socket_tx);
+    println!("Opening on port: {}", settings_json["windows"]["tcp_port"]);
+    let mut socket = Socket::handle_connections(Socket::make_listener((String::from(SERVER_ADDRESS) + &settings_json["windows"]["tcp_port"].to_string()).as_str()), from_socket_tx);
     
     let (hotkey_close_flag_tx, hotkey_close_flag_rx) = sync_flag::new_syncflag(true);
     let control_c_called_flag_rx = setup_control_c(hotkey_close_flag_tx);
